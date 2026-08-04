@@ -13,7 +13,7 @@ export function ProductCard({ product }: { product: Product }) {
   return (
     <div className="group relative overflow-hidden rounded-xl border border-border bg-card transition-colors hover:border-primary/60">
       <Link to="/product/$productId" params={{ productId: product.id }} className="block">
-        <div className="relative aspect-[3/4] overflow-hidden bg-muted">
+        <div className="relative aspect-[5/7] overflow-hidden bg-muted">
           <img
             src={product.image}
             alt={product.name}
