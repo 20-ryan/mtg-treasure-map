@@ -1,5 +1,5 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
-import { Navigation, Star, Clock, Phone, MapPin, CalendarDays } from "lucide-react";
+import { Navigation, Star, Clock, Phone, MapPin, CalendarDays, Globe } from "lucide-react";
 import { PageHeader } from "@/components/app/PageHeader";
 import { ProductCard } from "@/components/app/ProductCard";
 import { StoreMap } from "@/components/app/StoreMap";
