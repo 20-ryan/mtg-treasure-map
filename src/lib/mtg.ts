@@ -151,14 +151,6 @@ import edhSquirreled from "@/assets/edh-squirreled.jpg";
 import sleeves from "@/assets/sleeves.jpg";
 import playmat from "@/assets/playmat.jpg";
 
-const sealedImages: Record<string, string> = {
-  "blb-booster": blbBooster,
-  "mh3-collector": mh3Collector,
-  "edh-eldrazi": edhEldrazi,
-  "edh-squirreled": edhSquirreled,
-  sleeves,
-  playmat,
-};
 
 export const PRODUCTS: Product[] = [
   {
@@ -249,7 +241,7 @@ export const PRODUCTS: Product[] = [
     colors: [],
     typeLine: "Sealed — 36 Play Boosters",
     oracle: "36 Play Boosters of the woodland plane of Bloomburrow.",
-    image: sealedImages["blb-booster"],
+    image: blbBooster,
     msrp: 132.0,
   },
   {
@@ -262,7 +254,7 @@ export const PRODUCTS: Product[] = [
     colors: [],
     typeLine: "Sealed — Collector Booster",
     oracle: "Foils, borderless treatments and serialized chase cards.",
-    image: sealedImages["mh3-collector"],
+    image: mh3Collector,
     msrp: 34.0,
   },
   {
@@ -275,7 +267,7 @@ export const PRODUCTS: Product[] = [
     colors: ["C"],
     typeLine: "Sealed — 100 Card Commander Deck",
     oracle: "Colorless ramp precon led by Ulalek, Fused Atrocity.",
-    image: sealedImages["edh-eldrazi"],
+    image: edhEldrazi,
     msrp: 44.0,
   },
   {
@@ -288,7 +280,7 @@ export const PRODUCTS: Product[] = [
     colors: ["B", "G"],
     typeLine: "Sealed — 100 Card Commander Deck",
     oracle: "Golgari token swarm precon with two foil commanders.",
-    image: sealedImages["edh-squirreled"],
+    image: edhSquirreled,
     msrp: 42.0,
   },
   {
@@ -301,7 +293,7 @@ export const PRODUCTS: Product[] = [
     colors: [],
     typeLine: "Accessory — Sleeves",
     oracle: "Standard size matte sleeves, 100 count. Tournament legal.",
-    image: sealedImages["sleeves"],
+    image: sleeves,
     msrp: 12.9,
   },
   {
@@ -314,7 +306,7 @@ export const PRODUCTS: Product[] = [
     colors: [],
     typeLine: "Accessory — Playmat",
     oracle: "Stitched-edge rubber playmat, 24 x 14 inches.",
-    image: sealedImages["playmat"],
+    image: playmat,
     msrp: 29.0,
   },
 ];
