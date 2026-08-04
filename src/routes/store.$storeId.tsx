@@ -52,9 +52,17 @@ function StorePage() {
             <span className="flex items-center gap-1">
               <Clock className="h-3 w-3" /> {store.hours}
             </span>
-            <span className="flex items-center gap-1">
+            <a href={`tel:${store.phone.replace(/\s/g, "")}`} className="flex items-center gap-1 hover:text-primary">
               <Phone className="h-3 w-3" /> {store.phone}
-            </span>
+            </a>
+            <a
+              href={`https://${store.website}`}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-1 hover:text-primary"
+            >
+              <Globe className="h-3 w-3" /> {store.website}
+            </a>
             <span className="flex items-center gap-1">
               <MapPin className="h-3 w-3" /> {store.address}
             </span>
