@@ -9,7 +9,7 @@ import { distanceKm, FEATURED_SETS, HOME_COORDS, PRODUCTS, STORES } from "@/lib/
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "MTG SG Finder — Find Magic Cards at Local Game Stores" },
+      { title: "MTG SG Finder — Magic Cards at Singapore Game Stores" },
       {
         name: "description",
         content:
