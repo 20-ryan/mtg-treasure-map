@@ -12,6 +12,7 @@ export type Store = {
   reviews: number;
   hours: string;
   phone: string;
+  website: string;
   tags: string[];
   events: { day: string; name: string; format: string }[];
 };
@@ -43,7 +44,7 @@ export const STORES: Store[] = [
     id: "arcane-vault",
     name: "The Arcane Vault",
     blurb: "Competitive hub with the deepest singles binder in the district.",
-    address: "48 Duxton Road",
+    address: "48 Duxton Road, Singapore 089515",
     city: "Downtown",
     lat: 1.2795,
     lng: 103.8425,
@@ -51,6 +52,7 @@ export const STORES: Store[] = [
     reviews: 412,
     hours: "11:00 – 22:00",
     phone: "+65 6221 4480",
+    website: "arcanevault.sg",
     tags: ["Singles", "Tournaments", "Grading"],
     events: [
       { day: "Fri", name: "Friday Night Magic", format: "Standard" },
@@ -62,7 +64,7 @@ export const STORES: Store[] = [
     id: "gilded-goblin",
     name: "Gilded Goblin Games",
     blurb: "Family-run shop famous for sealed product deals and big play space.",
-    address: "12 Tanjong Pagar Plaza",
+    address: "12 Tanjong Pagar Plaza #02-14, Singapore 081012",
     city: "Tanjong Pagar",
     lat: 1.2757,
     lng: 103.8438,
@@ -70,6 +72,7 @@ export const STORES: Store[] = [
     reviews: 288,
     hours: "12:00 – 21:00",
     phone: "+65 6337 1290",
+    website: "gildedgoblin.com.sg",
     tags: ["Sealed", "Casual", "Kids Table"],
     events: [
       { day: "Thu", name: "Pauper Night", format: "Pauper" },
@@ -80,7 +83,7 @@ export const STORES: Store[] = [
     id: "planeswalk",
     name: "Planeswalk Collectibles",
     blurb: "Boutique store for reserved list rarities and graded slabs.",
-    address: "301 Beach Road #02-11",
+    address: "301 Beach Road #02-11, Singapore 199555",
     city: "Bugis",
     lat: 1.3009,
     lng: 103.8607,
@@ -88,6 +91,7 @@ export const STORES: Store[] = [
     reviews: 176,
     hours: "13:00 – 20:00",
     phone: "+65 6291 7742",
+    website: "planeswalk.sg",
     tags: ["Rare", "Vintage", "Buylist"],
     events: [{ day: "Wed", name: "Legacy Legends", format: "Legacy" }],
   },
@@ -95,7 +99,7 @@ export const STORES: Store[] = [
     id: "mana-forge",
     name: "Mana Forge Tabletop",
     blurb: "Late-night café and game store with 24 tables and full snack bar.",
-    address: "77 Kampong Bahru",
+    address: "77 Kampong Bahru Road, Singapore 169371",
     city: "Outram",
     lat: 1.2731,
     lng: 103.8339,
@@ -103,6 +107,7 @@ export const STORES: Store[] = [
     reviews: 523,
     hours: "10:00 – 01:00",
     phone: "+65 6444 8812",
+    website: "manaforge.sg",
     tags: ["Café", "Late Night", "Accessories"],
     events: [
       { day: "Tue", name: "Modern Mayhem", format: "Modern" },
@@ -113,7 +118,7 @@ export const STORES: Store[] = [
     id: "dragons-hoard",
     name: "Dragon's Hoard",
     blurb: "Accessory specialists — sleeves, decks boxes and playmats galore.",
-    address: "5 Orchard Turn #04-09",
+    address: "5 Orchard Turn #04-09, Singapore 238801",
     city: "Orchard",
     lat: 1.3039,
     lng: 103.8318,
@@ -121,6 +126,7 @@ export const STORES: Store[] = [
     reviews: 201,
     hours: "11:00 – 22:00",
     phone: "+65 6733 5566",
+    website: "dragonshoard.com.sg",
     tags: ["Accessories", "Playmats", "Sleeves"],
     events: [{ day: "Sun", name: "Sealed Scramble", format: "Sealed" }],
   },
@@ -128,7 +134,7 @@ export const STORES: Store[] = [
     id: "leyline-lounge",
     name: "Leyline Lounge",
     blurb: "Commander-first clubhouse with rotating precon rentals.",
-    address: "160 Robinson Road",
+    address: "160 Robinson Road #03-07, Singapore 068914",
     city: "Shenton Way",
     lat: 1.2782,
     lng: 103.8489,
@@ -136,6 +142,7 @@ export const STORES: Store[] = [
     reviews: 149,
     hours: "12:00 – 23:00",
     phone: "+65 6019 3344",
+    website: "leylinelounge.sg",
     tags: ["Commander", "Precons", "Lounge"],
     events: [{ day: "Sat", name: "EDH Gauntlet", format: "Commander" }],
   },
@@ -391,6 +398,6 @@ export const productById = (id: string) => PRODUCTS.find((p) => p.id === id);
 
 export function directionsUrl(store: Store) {
   return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
-    `${store.name}, ${store.address}, ${store.city}`,
+    `${store.name}, ${store.address}, Singapore`,
   )}`;
 }

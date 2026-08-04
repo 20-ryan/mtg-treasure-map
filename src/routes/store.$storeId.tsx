@@ -1,5 +1,5 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
-import { Navigation, Star, Clock, Phone, MapPin, CalendarDays } from "lucide-react";
+import { Navigation, Star, Clock, Phone, MapPin, CalendarDays, Globe } from "lucide-react";
 import { PageHeader } from "@/components/app/PageHeader";
 import { ProductCard } from "@/components/app/ProductCard";
 import { StoreMap } from "@/components/app/StoreMap";
@@ -14,14 +14,14 @@ export const Route = createFileRoute("/store/$storeId")({
   },
   head: ({ loaderData }) => {
     if (!loaderData) {
-      return { meta: [{ title: "Store not found — MTG Store Finder" }, { name: "robots", content: "noindex" }] };
+      return { meta: [{ title: "Store not found — MTG SG Finder" }, { name: "robots", content: "noindex" }] };
     }
     const { store } = loaderData;
     return {
       meta: [
-        { title: `${store.name} — Magic Cards & Events | MTG Store Finder` },
+        { title: `${store.name} — Magic Cards & Events | MTG SG Finder` },
         { name: "description", content: `${store.blurb} Live Magic inventory, opening hours and directions.` },
-        { property: "og:title", content: `${store.name} — MTG Store Finder` },
+        { property: "og:title", content: `${store.name} — MTG SG Finder` },
         { property: "og:description", content: store.blurb },
       ],
     };
@@ -52,9 +52,17 @@ function StorePage() {
             <span className="flex items-center gap-1">
               <Clock className="h-3 w-3" /> {store.hours}
             </span>
-            <span className="flex items-center gap-1">
+            <a href={`tel:${store.phone.replace(/\s/g, "")}`} className="flex items-center gap-1 hover:text-primary">
               <Phone className="h-3 w-3" /> {store.phone}
-            </span>
+            </a>
+            <a
+              href={`https://${store.website}`}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-1 hover:text-primary"
+            >
+              <Globe className="h-3 w-3" /> {store.website}
+            </a>
             <span className="flex items-center gap-1">
               <MapPin className="h-3 w-3" /> {store.address}
             </span>

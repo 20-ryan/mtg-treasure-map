@@ -80,16 +80,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "MTG Store Finder" },
+      { title: "MTG SG Finder — Magic Cards at Singapore Game Stores" },
       {
         name: "description",
-        content: "Find Magic: The Gathering cards, boosters and decks in stock at local game stores.",
+        content: "Find Magic: The Gathering cards, boosters and decks in stock at Singapore game stores.",
       },
       { name: "theme-color", content: "#151424" },
-      { property: "og:title", content: "MTG Store Finder" },
+      { property: "og:title", content: "MTG SG Finder" },
       {
         property: "og:description",
-        content: "Find Magic: The Gathering cards in stock at local game stores near you.",
+        content: "Find Magic: The Gathering cards in stock at game stores across Singapore.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

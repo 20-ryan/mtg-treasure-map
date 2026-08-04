@@ -10,13 +10,13 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/map")({
   head: () => ({
     meta: [
-      { title: "Store Map — MTG Store Finder" },
+      { title: "Store Map — MTG SG Finder" },
       {
         name: "description",
-        content: "Interactive map of Magic: The Gathering game stores near you with hours, ratings and directions.",
+        content: "Interactive map of Magic: The Gathering game stores across Singapore with hours, ratings and directions.",
       },
-      { property: "og:title", content: "Store Map — MTG Store Finder" },
-      { property: "og:description", content: "Find local game stores near you and get directions instantly." },
+      { property: "og:title", content: "Store Map — MTG SG Finder" },
+      { property: "og:description", content: "Find Singapore game stores near you and get Google Maps directions instantly." },
     ],
   }),
   component: MapPage,
@@ -41,7 +41,7 @@ function MapPage() {
   return (
     <div className="pb-8">
       <PageHeader
-        title="Stores near you"
+        title="Singapore stores"
         subtitle={status === "granted" ? "Using your live location" : "Downtown default location"}
         action={
           <span className="grid h-9 w-9 place-items-center rounded-full border border-border text-arcane">
