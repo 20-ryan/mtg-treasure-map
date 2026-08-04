@@ -13,12 +13,12 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Search Magic: The Gathering singles, boosters, commander decks and accessories, compare prices and see live stock at game stores near you.",
+          "Search Magic: The Gathering singles, boosters, commander decks and accessories at Singapore game stores — live stock, price comparison and directions.",
       },
       { property: "og:title", content: "MTG SG Finder — Cards, Stock & Stores Near You" },
       {
         property: "og:description",
-        content: "Live inventory, price comparison and directions to local Magic: The Gathering stores.",
+        content: "Live inventory, price comparison and directions to Singapore Magic: The Gathering stores.",
       },
     ],
   }),
@@ -53,10 +53,10 @@ function Home() {
         <div className="pointer-events-none absolute -right-20 top-0 h-48 w-48 rounded-full bg-arcane/25 blur-3xl" />
         <div className="relative">
           <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
-            <Sparkles className="h-3.5 w-3.5" /> Local Game Stores
+            <Sparkles className="h-3.5 w-3.5" /> Singapore Game Stores
           </p>
           <h1 className="mt-2 text-3xl font-bold leading-tight">
-            Track down every <span className="text-gradient-gold">card</span> near you
+            Track down every <span className="text-gradient-gold">card</span> in Singapore
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
             Live inventory and prices from {STORES.length} stores within reach.

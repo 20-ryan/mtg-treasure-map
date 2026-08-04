@@ -13,7 +13,7 @@ export const Route = createFileRoute("/map")({
       { title: "Store Map — MTG SG Finder" },
       {
         name: "description",
-        content: "Interactive map of Magic: The Gathering game stores near you with hours, ratings and directions.",
+        content: "Interactive map of Magic: The Gathering game stores across Singapore with hours, ratings and directions.",
       },
       { property: "og:title", content: "Store Map — MTG SG Finder" },
       { property: "og:description", content: "Find local game stores near you and get directions instantly." },
