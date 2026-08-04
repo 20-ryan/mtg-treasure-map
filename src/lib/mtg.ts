@@ -141,7 +141,24 @@ export const STORES: Store[] = [
   },
 ];
 
-const img = (id: string) => `https://cards.scryfall.io/normal/front/${id}.jpg`;
+const img = (name: string) =>
+  `https://api.scryfall.com/cards/named?exact=${encodeURIComponent(name)}&format=image&version=normal`;
+
+import blbBooster from "@/assets/blb-booster.jpg";
+import mh3Collector from "@/assets/mh3-collector.jpg";
+import edhEldrazi from "@/assets/edh-eldrazi.jpg";
+import edhSquirreled from "@/assets/edh-squirreled.jpg";
+import sleeves from "@/assets/sleeves.jpg";
+import playmat from "@/assets/playmat.jpg";
+
+const sealedImages: Record<string, string> = {
+  "blb-booster": blbBooster,
+  "mh3-collector": mh3Collector,
+  "edh-eldrazi": edhEldrazi,
+  "edh-squirreled": edhSquirreled,
+  sleeves,
+  playmat,
+};
 
 export const PRODUCTS: Product[] = [
   {
@@ -154,7 +171,7 @@ export const PRODUCTS: Product[] = [
     colors: ["C"],
     typeLine: "Artifact",
     oracle: "{T}: Add {C}{C}.",
-    image: img("f/0/f0d1a1a3-4b8a-4ba9-9ac9-cfbb1e8e2c7f"),
+    image: img("Sol Ring"),
     msrp: 3.5,
   },
   {
@@ -167,7 +184,7 @@ export const PRODUCTS: Product[] = [
     colors: ["R"],
     typeLine: "Instant",
     oracle: "Lightning Bolt deals 3 damage to any target.",
-    image: img("9/6/9683d3ae-1a2e-4e5b-9a1b-2ec2ba1a2f74"),
+    image: img("Lightning Bolt"),
     msrp: 2.2,
   },
   {
@@ -180,7 +197,7 @@ export const PRODUCTS: Product[] = [
     colors: ["W", "U", "B", "G"],
     typeLine: "Legendary Creature — Phyrexian Angel Horror",
     oracle: "Flying, vigilance, deathtouch, lifelink. At the beginning of your end step, proliferate.",
-    image: img("d/0/d0d33d52-3d28-4635-b985-51e126289259"),
+    image: img("Atraxa, Praetors' Voice"),
     msrp: 24.0,
   },
   {
@@ -193,7 +210,7 @@ export const PRODUCTS: Product[] = [
     colors: ["R"],
     typeLine: "Legendary Creature — Monkey Pirate",
     oracle: "Whenever Ragavan deals combat damage to a player, create a Treasure token and exile the top card of that player's library.",
-    image: img("a/9/a9738cda-adb1-47fb-9f4c-ecd930228c4d"),
+    image: img("Ragavan, Nimble Pilferer"),
     msrp: 48.0,
   },
   {
@@ -206,7 +223,7 @@ export const PRODUCTS: Product[] = [
     colors: ["U"],
     typeLine: "Instant",
     oracle: "Counter target spell.",
-    image: img("1/9/1920dae4-fb92-4f19-ade7-458dd23b4aa9"),
+    image: img("Counterspell"),
     msrp: 1.8,
   },
   {
@@ -219,7 +236,7 @@ export const PRODUCTS: Product[] = [
     colors: ["B"],
     typeLine: "Legendary Creature — Phyrexian Praetor",
     oracle: "Deathtouch. Whenever you draw a card, you gain 2 life. Whenever an opponent draws a card, they lose 2 life.",
-    image: img("d/6/d67be074-cdd4-41d9-ac89-0a0456c4e4b2"),
+    image: img("Sheoldred, the Apocalypse"),
     msrp: 62.0,
   },
   {
@@ -232,7 +249,7 @@ export const PRODUCTS: Product[] = [
     colors: [],
     typeLine: "Sealed — 36 Play Boosters",
     oracle: "36 Play Boosters of the woodland plane of Bloomburrow.",
-    image: img("7/8/78c8dc22-c9d9-4e3a-a4d2-f1dd6b3d3b78"),
+    image: sealedImages["blb-booster"],
     msrp: 132.0,
   },
   {
@@ -245,7 +262,7 @@ export const PRODUCTS: Product[] = [
     colors: [],
     typeLine: "Sealed — Collector Booster",
     oracle: "Foils, borderless treatments and serialized chase cards.",
-    image: img("2/7/27c66cbc-1e0f-4dd6-b3c3-fd6b1e6f9f2f"),
+    image: sealedImages["mh3-collector"],
     msrp: 34.0,
   },
   {
@@ -258,7 +275,7 @@ export const PRODUCTS: Product[] = [
     colors: ["C"],
     typeLine: "Sealed — 100 Card Commander Deck",
     oracle: "Colorless ramp precon led by Ulalek, Fused Atrocity.",
-    image: img("5/9/5942e3a2-3a04-4b5e-9c1e-1b8fef2eb4f5"),
+    image: sealedImages["edh-eldrazi"],
     msrp: 44.0,
   },
   {
@@ -271,7 +288,7 @@ export const PRODUCTS: Product[] = [
     colors: ["B", "G"],
     typeLine: "Sealed — 100 Card Commander Deck",
     oracle: "Golgari token swarm precon with two foil commanders.",
-    image: img("3/1/31d3e0f0-84b9-4a0b-8f5b-25b1a3a54a4b"),
+    image: sealedImages["edh-squirreled"],
     msrp: 42.0,
   },
   {
@@ -284,7 +301,7 @@ export const PRODUCTS: Product[] = [
     colors: [],
     typeLine: "Accessory — Sleeves",
     oracle: "Standard size matte sleeves, 100 count. Tournament legal.",
-    image: img("4/4/44f8b1b3-2f2b-4a97-9b32-1f0f3f0d1a1d"),
+    image: sealedImages["sleeves"],
     msrp: 12.9,
   },
   {
@@ -297,7 +314,7 @@ export const PRODUCTS: Product[] = [
     colors: [],
     typeLine: "Accessory — Playmat",
     oracle: "Stitched-edge rubber playmat, 24 x 14 inches.",
-    image: img("6/2/62b4e4ab-1a4f-4a9a-9a3f-9f8d0a9c8e11"),
+    image: sealedImages["playmat"],
     msrp: 29.0,
   },
 ];
