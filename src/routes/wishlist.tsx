@@ -9,12 +9,12 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/wishlist")({
   head: () => ({
     meta: [
-      { title: "Wishlist & Restock Alerts — MTG Store Finder" },
+      { title: "Wishlist & Restock Alerts — MTG SG Finder" },
       {
         name: "description",
         content: "Save Magic cards and sealed product, track local prices and get notified when stores restock.",
       },
-      { property: "og:title", content: "Wishlist & Restock Alerts — MTG Store Finder" },
+      { property: "og:title", content: "Wishlist & Restock Alerts — MTG SG Finder" },
       { property: "og:description", content: "Track prices and restocks for the Magic cards you want." },
     ],
   }),

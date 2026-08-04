@@ -9,13 +9,13 @@ import { distanceKm, FEATURED_SETS, HOME_COORDS, PRODUCTS, STORES } from "@/lib/
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "MTG Store Finder — Find Magic Cards at Local Game Stores" },
+      { title: "MTG SG Finder — Find Magic Cards at Local Game Stores" },
       {
         name: "description",
         content:
           "Search Magic: The Gathering singles, boosters, commander decks and accessories, compare prices and see live stock at game stores near you.",
       },
-      { property: "og:title", content: "MTG Store Finder — Cards, Stock & Stores Near You" },
+      { property: "og:title", content: "MTG SG Finder — Cards, Stock & Stores Near You" },
       {
         property: "og:description",
         content: "Live inventory, price comparison and directions to local Magic: The Gathering stores.",

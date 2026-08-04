@@ -24,12 +24,12 @@ export const Route = createFileRoute("/search")({
   }),
   head: () => ({
     meta: [
-      { title: "Card Search — MTG Store Finder" },
+      { title: "Card Search — MTG SG Finder" },
       {
         name: "description",
         content: "Search the Magic card database and filter by price, distance, product type and availability.",
       },
-      { property: "og:title", content: "Card Search — MTG Store Finder" },
+      { property: "og:title", content: "Card Search — MTG SG Finder" },
       { property: "og:description", content: "Filter Magic singles and sealed product by price, distance and stock." },
     ],
   }),

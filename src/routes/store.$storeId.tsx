@@ -14,14 +14,14 @@ export const Route = createFileRoute("/store/$storeId")({
   },
   head: ({ loaderData }) => {
     if (!loaderData) {
-      return { meta: [{ title: "Store not found — MTG Store Finder" }, { name: "robots", content: "noindex" }] };
+      return { meta: [{ title: "Store not found — MTG SG Finder" }, { name: "robots", content: "noindex" }] };
     }
     const { store } = loaderData;
     return {
       meta: [
-        { title: `${store.name} — Magic Cards & Events | MTG Store Finder` },
+        { title: `${store.name} — Magic Cards & Events | MTG SG Finder` },
         { name: "description", content: `${store.blurb} Live Magic inventory, opening hours and directions.` },
-        { property: "og:title", content: `${store.name} — MTG Store Finder` },
+        { property: "og:title", content: `${store.name} — MTG SG Finder` },
         { property: "og:description", content: store.blurb },
       ],
     };

@@ -10,12 +10,12 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/map")({
   head: () => ({
     meta: [
-      { title: "Store Map — MTG Store Finder" },
+      { title: "Store Map — MTG SG Finder" },
       {
         name: "description",
         content: "Interactive map of Magic: The Gathering game stores near you with hours, ratings and directions.",
       },
-      { property: "og:title", content: "Store Map — MTG Store Finder" },
+      { property: "og:title", content: "Store Map — MTG SG Finder" },
       { property: "og:description", content: "Find local game stores near you and get directions instantly." },
     ],
   }),

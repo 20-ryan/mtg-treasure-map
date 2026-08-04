@@ -23,14 +23,14 @@ export const Route = createFileRoute("/product/$productId")({
   },
   head: ({ loaderData }) => {
     if (!loaderData) {
-      return { meta: [{ title: "Product not found — MTG Store Finder" }, { name: "robots", content: "noindex" }] };
+      return { meta: [{ title: "Product not found — MTG SG Finder" }, { name: "robots", content: "noindex" }] };
     }
     const { product } = loaderData;
     return {
       meta: [
-        { title: `${product.name} — Prices & Stock | MTG Store Finder` },
+        { title: `${product.name} — Prices & Stock | MTG SG Finder` },
         { name: "description", content: `Compare local store prices and stock for ${product.name} from ${product.set}.` },
-        { property: "og:title", content: `${product.name} — MTG Store Finder` },
+        { property: "og:title", content: `${product.name} — MTG SG Finder` },
         { property: "og:description", content: `Live local prices and availability for ${product.name}.` },
       ],
     };
