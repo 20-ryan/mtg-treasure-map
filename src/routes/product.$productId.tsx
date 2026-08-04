@@ -65,7 +65,7 @@ function ProductPage() {
               <span className="rounded-md bg-secondary px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
                 {product.rarity}
               </span>
-              {product.colors.map((c) => (
+              {product.colors.map((c: string) => (
                 <span
                   key={c}
                   className="rounded-md px-2 py-0.5 text-[10px] font-semibold"

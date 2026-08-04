@@ -16,7 +16,7 @@ import {
 } from "@/lib/mtg";
 import { cn } from "@/lib/utils";
 
-type SearchParams = { q?: string };
+type SearchParams = { q?: string | undefined };
 
 export const Route = createFileRoute("/search")({
   validateSearch: (search: Record<string, unknown>): SearchParams => ({

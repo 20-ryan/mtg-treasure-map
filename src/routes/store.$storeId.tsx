@@ -60,7 +60,7 @@ function StorePage() {
             </span>
           </div>
           <div className="mt-3 flex flex-wrap gap-1.5">
-            {store.tags.map((t) => (
+            {store.tags.map((t: string) => (
               <span key={t} className="rounded-full bg-background/50 px-2.5 py-1 text-[10px] font-semibold text-primary">
                 {t}
               </span>
@@ -83,7 +83,7 @@ function StorePage() {
             <CalendarDays className="h-4 w-4 text-primary" /> Weekly events
           </h2>
           <div className="space-y-2">
-            {store.events.map((e) => (
+            {store.events.map((e: { day: string; name: string; format: string }) => (
               <div key={e.name} className="flex items-center gap-3 rounded-xl border border-border bg-card p-3">
                 <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-secondary text-[11px] font-bold text-primary">
                   {e.day}
