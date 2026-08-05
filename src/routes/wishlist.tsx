@@ -1,108 +1,88 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Bell, BellOff, Heart, Trash2 } from "lucide-react";
+import { Bell, BellOff, Trash2 } from "lucide-react";
 import { PageHeader } from "@/components/app/PageHeader";
-import { bestListing, listingsFor, productById, storeById } from "@/lib/mtg";
+import { bestListing, productImage, useCatalog } from "@/lib/mtg";
 import { useWishlist } from "@/lib/wishlist";
 import { cn } from "@/lib/utils";
-import { toast } from "sonner";
 
 export const Route = createFileRoute("/wishlist")({
   head: () => ({
     meta: [
       { title: "Wishlist & Restock Alerts — MTG SG Finder" },
-      {
-        name: "description",
-        content: "Save Magic cards and sealed product, track local prices and get notified when stores restock.",
-      },
-      { property: "og:title", content: "Wishlist & Restock Alerts — MTG SG Finder" },
-      { property: "og:description", content: "Track prices and restocks for the Magic cards you want." },
+      { name: "description", content: "Save Magic cards and products and get alerted when Singapore stores restock." },
+      { property: "og:title", content: "Wishlist — MTG SG Finder" },
+      { property: "og:description", content: "Restock alerts for Singapore Magic stores." },
     ],
   }),
   component: WishlistPage,
 });
 
 function WishlistPage() {
-  const { items, remove, setNotify } = useWishlist();
+  const { items, remove, setNotify, signedIn } = useWishlist();
+  const { products, stores, inventory } = useCatalog();
+
+  const rows = items
+    .map((i) => ({ entry: i, product: products.find((p) => p.id === i.id) }))
+    .filter((r): r is { entry: typeof items[number]; product: NonNullable<typeof r.product> } => Boolean(r.product));
 
   return (
     <div className="pb-10">
-      <PageHeader title="Wishlist" subtitle={`${items.length} tracked items`} />
+      <PageHeader
+        title="Wishlist"
+        subtitle={signedIn ? `${items.length} saved · synced to your account` : `${items.length} saved on this device`}
+      />
 
       <div className="space-y-3 px-4 pt-4">
-        {items.length === 0 && (
-          <div className="rounded-2xl border border-dashed border-border p-12 text-center">
-            <Heart className="mx-auto h-8 w-8 text-muted-foreground" />
-            <p className="mt-3 text-sm font-semibold">Your wishlist is empty</p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Tap the heart on any card to track prices and restocks.
-            </p>
-            <Link
-              to="/search"
-              className="mt-4 inline-block rounded-lg bg-linear-to-r from-primary to-warning px-4 py-2 text-xs font-bold text-primary-foreground"
-            >
-              Browse cards
-            </Link>
-          </div>
+        {!signedIn && (
+          <Link
+            to="/account"
+            className="block rounded-xl border border-primary/40 bg-card p-3 text-xs text-muted-foreground"
+          >
+            <span className="font-semibold text-primary">Sign in</span> to sync your wishlist and get restock alerts.
+          </Link>
         )}
 
-        {items.map((item) => {
-          const product = productById(item.id);
-          if (!product) return null;
-          const best = bestListing(product.id);
-          const inStock = listingsFor(product.id).filter((l) => l.stock > 0).length;
+        {rows.length === 0 && (
+          <p className="rounded-xl border border-dashed border-border p-10 text-center text-xs text-muted-foreground">
+            Nothing saved yet. Tap the heart on any product.
+          </p>
+        )}
 
+        {rows.map(({ entry, product }) => {
+          const best = bestListing(inventory, product.id);
+          const store = best ? stores.find((s) => s.id === best.store_id) : null;
           return (
-            <div key={item.id} className="flex gap-3 rounded-xl border border-border bg-card p-3">
+            <div key={product.id} className="flex gap-3 rounded-xl border border-border bg-card p-3">
               <Link to="/product/$productId" params={{ productId: product.id }} className="shrink-0">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  loading="lazy"
-                  className="h-20 w-15 rounded-lg border border-border object-cover"
-                  style={{ width: "3.75rem" }}
-                />
+                <img src={productImage(product)} alt={product.name} className="h-20 w-14 rounded-lg object-cover" />
               </Link>
               <div className="min-w-0 flex-1">
-                <Link to="/product/$productId" params={{ productId: product.id }}>
+                <Link to="/product/$productId" params={{ productId: product.id }} className="block min-w-0">
                   <p className="truncate text-sm font-semibold">{product.name}</p>
-                  <p className="text-[11px] text-muted-foreground">{product.set}</p>
+                  <p className="truncate text-[11px] text-muted-foreground">{product.set_name}</p>
                 </Link>
-                <p className="mt-1 text-sm font-bold text-gradient-gold">
-                  {best ? `$${best.price.toFixed(2)}` : "No local stock"}
+                <p className={cn("mt-1 text-xs font-bold", best ? "text-gradient-gold" : "text-muted-foreground")}>
+                  {best ? `S$${best.price.toFixed(2)} · ${store?.name}` : "Out of stock everywhere"}
                 </p>
-                <p
-                  className={cn(
-                    "text-[10px] font-semibold",
-                    inStock > 0 ? "text-success" : "text-destructive",
-                  )}
-                >
-                  {inStock > 0
-                    ? `In stock at ${storeById(best!.storeId)?.name}`
-                    : "Out of stock everywhere nearby"}
-                </p>
-                <div className="mt-2 flex gap-2">
+                <div className="mt-2 flex items-center gap-2">
                   <button
                     type="button"
-                    onClick={() => {
-                      setNotify(item.id, !item.notify);
-                      toast(item.notify ? "Restock alerts off" : "Restock alerts on", {
-                        description: product.name,
-                      });
-                    }}
+                    onClick={() => void setNotify(product.id, !entry.notify)}
                     className={cn(
-                      "flex items-center gap-1 rounded-md border px-2 py-1 text-[10px] font-semibold",
-                      item.notify ? "border-primary text-primary" : "border-border text-muted-foreground",
+                      "flex items-center gap-1 rounded-lg border px-2.5 py-1.5 text-[11px] font-semibold",
+                      entry.notify ? "border-primary text-primary" : "border-border text-muted-foreground",
                     )}
                   >
-                    {item.notify ? <Bell className="h-3 w-3" /> : <BellOff className="h-3 w-3" />}
-                    {item.notify ? "Alerts on" : "Alerts off"}
+                    {entry.notify ? <Bell className="h-3 w-3" /> : <BellOff className="h-3 w-3" />}
+                    {entry.notify ? "Alerts on" : "Alerts off"}
                   </button>
                   <button
                     type="button"
-                    onClick={() => remove(item.id)}
-                    className="flex items-center gap-1 rounded-md border border-border px-2 py-1 text-[10px] font-semibold text-muted-foreground"
+                    onClick={() => void remove(product.id)}
+                    aria-label="Remove"
+                    className="grid h-7 w-7 place-items-center rounded-lg border border-border text-muted-foreground"
                   >
-                    <Trash2 className="h-3 w-3" /> Remove
+                    <Trash2 className="h-3.5 w-3.5" />
                   </button>
                 </div>
               </div>

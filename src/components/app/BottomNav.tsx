@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Home, Search, Map, Heart } from "lucide-react";
+import { Home, Search, Map, Heart, User } from "lucide-react";
 import { useWishlist } from "@/lib/wishlist";
 
 const items = [
@@ -7,6 +7,7 @@ const items = [
   { to: "/search", label: "Search", icon: Search },
   { to: "/map", label: "Stores", icon: Map },
   { to: "/wishlist", label: "Wishlist", icon: Heart },
+  { to: "/account", label: "Account", icon: User },
 ] as const;
 
 export function BottomNav() {
@@ -14,7 +15,7 @@ export function BottomNav() {
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-lg border-t border-border bg-popover/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl">
-      <ul className="grid grid-cols-4">
+      <ul className="grid grid-cols-5">
         {items.map(({ to, label, icon: Icon }) => (
           <li key={to}>
             <Link
