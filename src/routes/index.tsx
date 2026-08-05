@@ -1,10 +1,18 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Search, Sparkles, MapPin, ChevronRight, Flame } from "lucide-react";
+import { Search, Sparkles, MapPin, Navigation } from "lucide-react";
+import { GoogleStoreMap } from "@/components/app/GoogleStoreMap";
 import { ProductCard } from "@/components/app/ProductCard";
 import { StoreCard } from "@/components/app/StoreCard";
 import { useGeolocation } from "@/lib/geo";
-import { distanceKm, FEATURED_SETS, HOME_COORDS, PRODUCTS, STORES } from "@/lib/mtg";
+import {
+  bestListing,
+  directionsUrl,
+  distanceKm,
+  FEATURED_SETS,
+  useCatalog,
+  type Store,
+} from "@/lib/mtg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -13,165 +21,190 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Search Magic: The Gathering singles, boosters, commander decks and accessories at Singapore game stores — live stock, price comparison and directions.",
+          "Find Magic: The Gathering singles, boosters, Commander decks and accessories in stock at Dueller's Point, Manchi Games and Games Haven AMK.",
       },
-      { property: "og:title", content: "MTG SG Finder — Cards, Stock & Stores Near You" },
+      { property: "og:title", content: "MTG SG Finder" },
       {
         property: "og:description",
-        content: "Live inventory, price comparison and directions to Singapore Magic: The Gathering stores.",
+        content: "Live Magic inventory and directions for Singapore's local game stores.",
       },
     ],
   }),
-  component: Home,
+  component: HomePage,
 });
 
-function Home() {
-  const [query, setQuery] = useState("");
+function HomePage() {
   const navigate = useNavigate();
   const { coords, status } = useGeolocation();
-
-  const origin = useMemo(() => {
-    const d = distanceKm(coords, HOME_COORDS);
-    return d > 200 ? HOME_COORDS : coords;
-  }, [coords]);
+  const { stores, products, inventory, isLoading } = useCatalog();
+  const [query, setQuery] = useState("");
+  const [activeId, setActiveId] = useState<string | undefined>(undefined);
 
   const nearby = useMemo(
     () =>
-      STORES.map((s) => ({ store: s, distance: distanceKm(origin, s) }))
-        .sort((a, b) => a.distance - b.distance)
-        .slice(0, 3),
-    [origin],
+      stores
+        .map((s) => ({ store: s, distance: distanceKm(coords, s) }))
+        .sort((a, b) => a.distance - b.distance),
+    [stores, coords],
   );
 
-  const trending = PRODUCTS.filter((p) => p.type === "single").slice(0, 4);
-  const sealed = PRODUCTS.filter((p) => p.type !== "single").slice(0, 4);
+  const trending = useMemo(
+    () => products.filter((p) => p.category === "single").slice(0, 4),
+    [products],
+  );
+  const sealed = useMemo(
+    () => products.filter((p) => p.category !== "single" && p.category !== "accessory").slice(0, 4),
+    [products],
+  );
+
+  const active: Store | undefined = stores.find((s) => s.id === activeId);
 
   return (
-    <div className="space-y-8 pb-8">
-      <section className="relative overflow-hidden px-4 pb-6 pt-8">
-        <div className="pointer-events-none absolute -left-16 -top-24 h-56 w-56 rounded-full bg-accent/25 blur-3xl" />
-        <div className="pointer-events-none absolute -right-20 top-0 h-48 w-48 rounded-full bg-arcane/25 blur-3xl" />
-        <div className="relative">
-          <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
-            <Sparkles className="h-3.5 w-3.5" /> Singapore Game Stores
-          </p>
-          <h1 className="mt-2 text-3xl font-bold leading-tight">
-            Track down every <span className="text-gradient-gold">card</span> in Singapore
-          </h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Live inventory and prices from {STORES.length} stores within reach.
-          </p>
+    <div className="pb-6">
+      <header className="relative overflow-hidden px-4 pb-5 pt-8">
+        <div className="pointer-events-none absolute -right-16 -top-24 h-56 w-56 rounded-full bg-primary/15 blur-3xl" />
+        <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-primary">Singapore</p>
+        <h1 className="mt-1 font-display text-3xl font-bold leading-tight">
+          <span className="text-gradient-gold">MTG SG Finder</span>
+        </h1>
+        <p className="mt-2 max-w-xs text-sm text-muted-foreground">
+          Live stock, prices and directions for Singapore's Magic game stores.
+        </p>
 
-          <form
-            className="relative mt-5"
-            onSubmit={(e) => {
-              e.preventDefault();
-              navigate({ to: "/search", search: { q: query } });
-            }}
-          >
-            <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            void navigate({ to: "/search", search: { q: query } });
+          }}
+          className="mt-5"
+        >
+          <div className="flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2.5">
+            <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search cards, sets, decks…"
-              className="h-12 w-full rounded-full border border-border bg-input/70 pl-10 pr-24 text-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-primary"
+              placeholder="Search cards, boosters, decks…"
+              className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
             />
             <button
               type="submit"
-              className="absolute right-1.5 top-1.5 h-9 rounded-full bg-linear-to-r from-primary to-warning px-4 text-xs font-bold text-primary-foreground"
+              className="shrink-0 rounded-lg bg-linear-to-r from-primary to-warning px-3 py-1.5 text-xs font-bold text-primary-foreground"
             >
-              Search
+              Find
             </button>
-          </form>
-
-          <div className="no-scrollbar mt-3 flex gap-2 overflow-x-auto">
-            {["Sol Ring", "Ragavan", "Play Booster", "Commander deck", "Sleeves"].map((t) => (
-              <Link
-                key={t}
-                to="/search"
-                search={{ q: t }}
-                className="shrink-0 rounded-full border border-border bg-card px-3 py-1.5 text-[11px] text-muted-foreground transition-colors hover:border-primary hover:text-primary"
-              >
-                {t}
-              </Link>
-            ))}
           </div>
+        </form>
+      </header>
+
+      <section className="space-y-3 px-4">
+        <div className="flex items-end justify-between">
+          <h2 className="font-display text-lg font-semibold">Store map</h2>
+          <Link to="/map" className="text-xs font-semibold text-primary">
+            Full map
+          </Link>
         </div>
+        <GoogleStoreMap
+          stores={stores}
+          activeId={activeId}
+          user={status === "granted" ? coords : undefined}
+          onSelect={(s) => setActiveId(s.id)}
+          className="h-64"
+        />
+        {active && (
+          <div className="rounded-xl border border-primary/50 bg-card p-3">
+            <p className="text-sm font-semibold">{active.name}</p>
+            <p className="mt-0.5 flex items-center gap-1 text-[11px] text-muted-foreground">
+              <MapPin className="h-3 w-3" /> {active.address} · {distanceKm(coords, active)} km
+            </p>
+            <div className="mt-3 grid grid-cols-2 gap-2">
+              <Link
+                to="/store/$storeId"
+                params={{ storeId: active.id }}
+                className="rounded-lg border border-border py-2 text-center text-xs font-semibold"
+              >
+                Store profile
+              </Link>
+              <a
+                href={directionsUrl(active)}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center justify-center gap-1.5 rounded-lg bg-linear-to-r from-primary to-warning py-2 text-xs font-bold text-primary-foreground"
+              >
+                <Navigation className="h-3.5 w-3.5" /> Directions
+              </a>
+            </div>
+          </div>
+        )}
       </section>
 
-      <section className="space-y-3">
-        <SectionHead title="Featured sets" hint="Newest print runs in stock" />
-        <div className="no-scrollbar flex gap-3 overflow-x-auto px-4 pb-1">
+      <section className="mt-7 space-y-3">
+        <h2 className="px-4 font-display text-lg font-semibold">Featured sets</h2>
+        <div className="flex snap-x gap-3 overflow-x-auto px-4 pb-1">
           {FEATURED_SETS.map((set) => (
             <Link
               key={set.code}
               to="/search"
               search={{ q: set.name }}
-              className="relative w-40 shrink-0 overflow-hidden rounded-xl border border-border p-4"
-              style={{
-                background: `linear-gradient(150deg, oklch(0.45 0.16 ${set.hue} / 0.55), oklch(0.2 0.03 285))`,
-              }}
+              className="w-32 shrink-0 snap-start rounded-xl border border-border bg-card p-3"
+              style={{ background: `linear-gradient(160deg, oklch(0.3 0.09 ${set.hue} / 0.55), transparent)` }}
             >
-              <p className="font-display text-2xl font-bold text-primary">{set.code}</p>
+              <span className="font-display text-xl font-bold text-primary">{set.code}</span>
               <p className="mt-1 truncate text-xs font-medium">{set.name}</p>
-              <p className="text-[10px] text-muted-foreground">Released {set.released}</p>
+              <p className="text-[10px] text-muted-foreground">{set.released}</p>
             </Link>
           ))}
         </div>
       </section>
 
-      <section className="space-y-3">
-        <SectionHead title="Trending singles" hint="Most searched this week" icon={<Flame className="h-4 w-4 text-primary" />} />
-        <div className="grid grid-cols-2 gap-3 px-4">
+      <section className="mt-7 space-y-3 px-4">
+        <div className="flex items-end justify-between">
+          <h2 className="flex items-center gap-2 font-display text-lg font-semibold">
+            <Sparkles className="h-4 w-4 text-primary" /> Trending singles
+          </h2>
+          <Link to="/search" search={{ q: "" }} className="text-xs font-semibold text-primary">
+            See all
+          </Link>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
           {trending.map((p) => (
-            <ProductCard key={p.id} product={p} />
+            <ProductCard key={p.id} product={p} inventory={inventory} stores={stores} />
+          ))}
+        </div>
+        {isLoading && <p className="text-center text-xs text-muted-foreground">Loading catalog…</p>}
+      </section>
+
+      <section className="mt-7 space-y-3 px-4">
+        <h2 className="font-display text-lg font-semibold">Sealed &amp; decks</h2>
+        <div className="grid grid-cols-2 gap-3">
+          {sealed.map((p) => (
+            <ProductCard key={p.id} product={p} inventory={inventory} stores={stores} />
           ))}
         </div>
       </section>
 
-      <section className="space-y-3">
-        <div className="flex items-end justify-between px-4">
-          <div>
-            <h2 className="text-lg font-semibold">Nearby stores</h2>
-            <p className="text-[11px] text-muted-foreground">
-              {status === "granted"
-                ? "Sorted by your current location"
-                : status === "denied"
-                  ? "Location off — showing downtown stores"
-                  : "Finding stores around you…"}
-            </p>
-          </div>
-          <Link to="/map" className="flex items-center gap-0.5 text-xs font-semibold text-primary">
-            Map <ChevronRight className="h-3.5 w-3.5" />
-          </Link>
+      <section className="mt-7 space-y-3 px-4">
+        <div className="flex items-end justify-between">
+          <h2 className="font-display text-lg font-semibold">Nearby stores</h2>
+          <span className="text-[11px] text-muted-foreground">
+            {status === "granted" ? "Live location" : "Central Singapore"}
+          </span>
         </div>
-        <div className="space-y-2.5 px-4">
+        <div className="space-y-2">
           {nearby.map(({ store, distance }) => (
             <StoreCard key={store.id} store={store} distance={distance} />
           ))}
         </div>
+        {!isLoading && stores.length === 0 && (
+          <p className="rounded-xl border border-dashed border-border p-6 text-center text-xs text-muted-foreground">
+            No stores loaded yet.
+          </p>
+        )}
       </section>
 
-      <section className="space-y-3">
-        <SectionHead title="Sealed & accessories" hint="Boxes, precons and playmats" icon={<MapPin className="h-4 w-4 text-primary" />} />
-        <div className="grid grid-cols-2 gap-3 px-4">
-          {sealed.map((p) => (
-            <ProductCard key={p.id} product={p} />
-          ))}
-        </div>
-      </section>
-    </div>
-  );
-}
-
-function SectionHead({ title, hint, icon }: { title: string; hint: string; icon?: React.ReactNode }) {
-  return (
-    <div className="flex items-center gap-2 px-4">
-      {icon}
-      <div>
-        <h2 className="text-lg font-semibold leading-tight">{title}</h2>
-        <p className="text-[11px] text-muted-foreground">{hint}</p>
-      </div>
+      <p className="mt-8 px-4 text-center text-[10px] text-muted-foreground">
+        Prices shown in SGD. Stock updates live from participating stores.
+        {bestListing(inventory, products[0]?.id ?? "") ? "" : ""}
+      </p>
     </div>
   );
 }
