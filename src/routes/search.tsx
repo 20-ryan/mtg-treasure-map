@@ -18,9 +18,8 @@ type SearchParams = { q?: string };
 type SortKey = "relevance" | "price" | "distance";
 
 export const Route = createFileRoute("/search")({
-  validateSearch: (search: Record<string, unknown>): SearchParams => ({
-    q: typeof search["q"] === "string" ? (search["q"] as string) : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>): SearchParams =>
+    typeof search["q"] === "string" ? { q: search["q"] as string } : {},
   head: () => ({
     meta: [
       { title: "Search Magic Products — MTG SG Finder" },
