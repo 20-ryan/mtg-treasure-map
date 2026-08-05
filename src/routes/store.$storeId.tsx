@@ -1,74 +1,74 @@
-import { createFileRoute, notFound } from "@tanstack/react-router";
-import { Navigation, Star, Clock, Phone, MapPin, CalendarDays, Globe } from "lucide-react";
+import { createFileRoute } from "@tanstack/react-router";
+import { Navigation, Clock, Phone, MapPin, Globe, Facebook } from "lucide-react";
 import { PageHeader } from "@/components/app/PageHeader";
 import { ProductCard } from "@/components/app/ProductCard";
-import { StoreMap } from "@/components/app/StoreMap";
+import { GoogleStoreMap } from "@/components/app/GoogleStoreMap";
 import { useGeolocation } from "@/lib/geo";
-import { directionsUrl, distanceKm, HOME_COORDS, listingsFor, PRODUCTS, storeById } from "@/lib/mtg";
+import { directionsUrl, distanceKm, useCatalog } from "@/lib/mtg";
 
 export const Route = createFileRoute("/store/$storeId")({
-  loader: ({ params }) => {
-    const store = storeById(params.storeId);
-    if (!store) throw notFound();
-    return { store };
-  },
-  head: ({ loaderData }) => {
-    if (!loaderData) {
-      return { meta: [{ title: "Store not found — MTG SG Finder" }, { name: "robots", content: "noindex" }] };
-    }
-    const { store } = loaderData;
-    return {
-      meta: [
-        { title: `${store.name} — Magic Cards & Events | MTG SG Finder` },
-        { name: "description", content: `${store.blurb} Live Magic inventory, opening hours and directions.` },
-        { property: "og:title", content: `${store.name} — MTG SG Finder` },
-        { property: "og:description", content: store.blurb },
-      ],
-    };
-  },
+  head: () => ({
+    meta: [
+      { title: "Store — MTG SG Finder" },
+      { name: "description", content: "Opening hours, contact details, directions and live Magic inventory." },
+      { property: "og:title", content: "Store — MTG SG Finder" },
+      { property: "og:description", content: "Live Magic inventory at Singapore game stores." },
+    ],
+  }),
   component: StorePage,
 });
 
 function StorePage() {
-  const { store } = Route.useLoaderData();
+  const { storeId } = Route.useParams();
   const { coords } = useGeolocation();
-  const origin = distanceKm(coords, HOME_COORDS) > 200 ? HOME_COORDS : coords;
+  const { stores, products, inventory, isLoading } = useCatalog();
 
-  const stocked = PRODUCTS.filter((p) =>
-    listingsFor(p.id).some((l) => l.storeId === store.id && l.stock > 0),
+  const store = stores.find((s) => s.id === storeId);
+  if (isLoading) return <p className="p-10 text-center text-xs text-muted-foreground">Loading…</p>;
+  if (!store) return <p className="p-10 text-center text-sm">Store not found.</p>;
+
+  const stocked = products.filter((p) =>
+    inventory.some((l) => l.store_id === store.id && l.product_id === p.id && l.stock > 0),
   );
+  const featured = stocked.slice(0, 4);
 
   return (
     <div className="pb-10">
-      <PageHeader title={store.name} subtitle={`${store.city} · ${distanceKm(origin, store)} km away`} back />
+      <PageHeader title={store.name} subtitle={`${store.area} · ${distanceKm(coords, store)} km away`} back />
 
       <div className="space-y-6 px-4 pt-4">
         <div className="rounded-2xl border border-border bg-linear-to-br from-secondary to-card p-4">
           <p className="text-sm text-foreground/85">{store.blurb}</p>
-          <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-[11px] text-muted-foreground">
-            <span className="flex items-center gap-1 text-primary">
-              <Star className="h-3 w-3 fill-primary" /> {store.rating} ({store.reviews} reviews)
+          <div className="mt-3 flex flex-col gap-1.5 text-[11px] text-muted-foreground">
+            <span className="flex items-center gap-1.5">
+              <MapPin className="h-3 w-3" /> {store.address}, Singapore {store.postal_code}
             </span>
-            <span className="flex items-center gap-1">
+            <span className="flex items-center gap-1.5">
               <Clock className="h-3 w-3" /> {store.hours}
             </span>
-            <a href={`tel:${store.phone.replace(/\s/g, "")}`} className="flex items-center gap-1 hover:text-primary">
-              <Phone className="h-3 w-3" /> {store.phone}
-            </a>
-            <a
-              href={`https://${store.website}`}
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center gap-1 hover:text-primary"
-            >
-              <Globe className="h-3 w-3" /> {store.website}
-            </a>
-            <span className="flex items-center gap-1">
-              <MapPin className="h-3 w-3" /> {store.address}
-            </span>
+            {store.phone && (
+              <a href={`tel:${store.phone.replace(/\s/g, "")}`} className="flex items-center gap-1.5 hover:text-primary">
+                <Phone className="h-3 w-3" /> {store.phone}
+              </a>
+            )}
+            {store.website && (
+              <a
+                href={store.website.startsWith("http") ? store.website : `https://${store.website}`}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-1.5 hover:text-primary"
+              >
+                <Globe className="h-3 w-3" /> {store.website.replace(/^https?:\/\//, "")}
+              </a>
+            )}
+            {store.facebook && (
+              <a href={store.facebook} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 hover:text-primary">
+                <Facebook className="h-3 w-3" /> Facebook
+              </a>
+            )}
           </div>
           <div className="mt-3 flex flex-wrap gap-1.5">
-            {store.tags.map((t: string) => (
+            {store.tags.map((t) => (
               <span key={t} className="rounded-full bg-background/50 px-2.5 py-1 text-[10px] font-semibold text-primary">
                 {t}
               </span>
@@ -84,26 +84,18 @@ function StorePage() {
           </a>
         </div>
 
-        <StoreMap user={origin} activeId={store.id} className="h-48" />
+        <GoogleStoreMap stores={[store]} activeId={store.id} className="h-48" />
 
-        <section className="space-y-2">
-          <h2 className="flex items-center gap-2 text-base font-semibold">
-            <CalendarDays className="h-4 w-4 text-primary" /> Weekly events
-          </h2>
-          <div className="space-y-2">
-            {store.events.map((e: { day: string; name: string; format: string }) => (
-              <div key={e.name} className="flex items-center gap-3 rounded-xl border border-border bg-card p-3">
-                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-secondary text-[11px] font-bold text-primary">
-                  {e.day}
-                </span>
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium">{e.name}</p>
-                  <p className="text-[11px] text-muted-foreground">{e.format}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
+        {featured.length > 0 && (
+          <section className="space-y-3">
+            <h2 className="text-base font-semibold">Featured products</h2>
+            <div className="grid grid-cols-2 gap-3">
+              {featured.map((p) => (
+                <ProductCard key={p.id} product={p} inventory={inventory} stores={stores} />
+              ))}
+            </div>
+          </section>
+        )}
 
         <section className="space-y-3">
           <div>
@@ -112,7 +104,7 @@ function StorePage() {
           </div>
           <div className="grid grid-cols-2 gap-3">
             {stocked.map((p) => (
-              <ProductCard key={p.id} product={p} />
+              <ProductCard key={p.id} product={p} inventory={inventory} stores={stores} />
             ))}
           </div>
         </section>
