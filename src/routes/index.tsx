@@ -6,7 +6,6 @@ import { ProductCard } from "@/components/app/ProductCard";
 import { StoreCard } from "@/components/app/StoreCard";
 import { useGeolocation } from "@/lib/geo";
 import {
-  bestListing,
   directionsUrl,
   distanceKm,
   FEATURED_SETS,
@@ -203,7 +202,6 @@ function HomePage() {
 
       <p className="mt-8 px-4 text-center text-[10px] text-muted-foreground">
         Prices shown in SGD. Stock updates live from participating stores.
-        {bestListing(inventory, products[0]?.id ?? "") ? "" : ""}
       </p>
     </div>
   );
