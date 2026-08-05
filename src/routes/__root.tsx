@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { BottomNav } from "@/components/app/BottomNav";
 import { WishlistProvider } from "@/lib/wishlist";
+import { AuthProvider } from "@/hooks/useAuth";
 import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
@@ -134,14 +135,16 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <WishlistProvider>
-        <div className="mx-auto min-h-screen max-w-lg pb-20">
-          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-          <Outlet />
-        </div>
-        <BottomNav />
-        <Toaster position="top-center" />
-      </WishlistProvider>
+      <AuthProvider>
+        <WishlistProvider>
+          <div className="mx-auto min-h-screen max-w-lg pb-20">
+            {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+            <Outlet />
+          </div>
+          <BottomNav />
+          <Toaster position="top-center" />
+        </WishlistProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
