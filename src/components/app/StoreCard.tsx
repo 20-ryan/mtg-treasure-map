@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Star, MapPin, Clock, Navigation } from "lucide-react";
+import { MapPin, Clock, Navigation } from "lucide-react";
 import { directionsUrl, type Store } from "@/lib/mtg";
 
 export function StoreCard({ store, distance }: { store: Store; distance: number }) {
@@ -11,7 +11,9 @@ export function StoreCard({ store, distance }: { store: Store; distance: number 
         className="grid h-14 w-14 shrink-0 place-items-center rounded-lg bg-secondary font-display text-lg font-bold text-primary"
       >
         {store.name
+          .replace(/[^A-Za-z ]/g, "")
           .split(" ")
+          .filter(Boolean)
           .slice(0, 2)
           .map((w) => w[0])
           .join("")}
@@ -21,10 +23,6 @@ export function StoreCard({ store, distance }: { store: Store; distance: number 
           <p className="truncate text-sm font-semibold">{store.name}</p>
           <div className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[11px] text-muted-foreground">
             <span className="flex items-center gap-1 text-primary">
-              <Star className="h-3 w-3 fill-primary" />
-              {store.rating}
-            </span>
-            <span className="flex items-center gap-1">
               <MapPin className="h-3 w-3" />
               {distance} km
             </span>
