@@ -1,12 +1,13 @@
 import { Link } from "@tanstack/react-router";
-import { Home, Search, Map, Heart, User } from "lucide-react";
+import { Home, Search, Map, Camera, Layers, User } from "lucide-react";
 import { useWishlist } from "@/lib/wishlist";
 
 const items = [
   { to: "/", label: "Home", icon: Home },
   { to: "/search", label: "Search", icon: Search },
   { to: "/map", label: "Stores", icon: Map },
-  { to: "/wishlist", label: "Wishlist", icon: Heart },
+  { to: "/scan", label: "Scan", icon: Camera },
+  { to: "/collection", label: "Cards", icon: Layers },
   { to: "/account", label: "Account", icon: User },
 ] as const;
 
@@ -15,7 +16,7 @@ export function BottomNav() {
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-lg border-t border-border bg-popover/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl">
-      <ul className="grid grid-cols-5">
+      <ul className="grid grid-cols-6">
         {items.map(({ to, label, icon: Icon }) => (
           <li key={to}>
             <Link
@@ -25,7 +26,7 @@ export function BottomNav() {
             >
               <span className="relative">
                 <Icon className="h-5 w-5" strokeWidth={1.9} />
-                {to === "/wishlist" && wished.length > 0 && (
+                {to === "/collection" && wished.length > 0 && (
                   <span className="absolute -right-2 -top-1.5 grid h-4 min-w-4 place-items-center rounded-full bg-accent px-1 text-[9px] font-bold text-accent-foreground">
                     {wished.length}
                   </span>
