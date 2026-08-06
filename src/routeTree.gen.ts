@@ -11,7 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AccountRouteImport } from './routes/account'
+import { Route as CollectionRouteImport } from './routes/collection'
 import { Route as MapRouteImport } from './routes/map'
+import { Route as ScanRouteImport } from './routes/scan'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as WishlistRouteImport } from './routes/wishlist'
 import { Route as ProductProductIdRouteImport } from './routes/product.$productId'
@@ -27,9 +29,19 @@ const AccountRoute = AccountRouteImport.update({
   path: '/account',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CollectionRoute = CollectionRouteImport.update({
+  id: '/collection',
+  path: '/collection',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MapRoute = MapRouteImport.update({
   id: '/map',
   path: '/map',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ScanRoute = ScanRouteImport.update({
+  id: '/scan',
+  path: '/scan',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SearchRoute = SearchRouteImport.update({
@@ -56,7 +68,9 @@ const StoreStoreIdRoute = StoreStoreIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
+  '/collection': typeof CollectionRoute
   '/map': typeof MapRoute
+  '/scan': typeof ScanRoute
   '/search': typeof SearchRoute
   '/wishlist': typeof WishlistRoute
   '/product/$productId': typeof ProductProductIdRoute
@@ -65,7 +79,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
+  '/collection': typeof CollectionRoute
   '/map': typeof MapRoute
+  '/scan': typeof ScanRoute
   '/search': typeof SearchRoute
   '/wishlist': typeof WishlistRoute
   '/product/$productId': typeof ProductProductIdRoute
@@ -75,7 +91,9 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
+  '/collection': typeof CollectionRoute
   '/map': typeof MapRoute
+  '/scan': typeof ScanRoute
   '/search': typeof SearchRoute
   '/wishlist': typeof WishlistRoute
   '/product/$productId': typeof ProductProductIdRoute
@@ -86,7 +104,9 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/account'
+    | '/collection'
     | '/map'
+    | '/scan'
     | '/search'
     | '/wishlist'
     | '/product/$productId'
@@ -95,7 +115,9 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/account'
+    | '/collection'
     | '/map'
+    | '/scan'
     | '/search'
     | '/wishlist'
     | '/product/$productId'
@@ -104,7 +126,9 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/account'
+    | '/collection'
     | '/map'
+    | '/scan'
     | '/search'
     | '/wishlist'
     | '/product/$productId'
@@ -114,7 +138,9 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountRoute: typeof AccountRoute
+  CollectionRoute: typeof CollectionRoute
   MapRoute: typeof MapRoute
+  ScanRoute: typeof ScanRoute
   SearchRoute: typeof SearchRoute
   WishlistRoute: typeof WishlistRoute
   ProductProductIdRoute: typeof ProductProductIdRoute
@@ -137,11 +163,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccountRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/collection': {
+      id: '/collection'
+      path: '/collection'
+      fullPath: '/collection'
+      preLoaderRoute: typeof CollectionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/map': {
       id: '/map'
       path: '/map'
       fullPath: '/map'
       preLoaderRoute: typeof MapRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/scan': {
+      id: '/scan'
+      path: '/scan'
+      fullPath: '/scan'
+      preLoaderRoute: typeof ScanRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/search': {
@@ -178,7 +218,9 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
+  CollectionRoute: CollectionRoute,
   MapRoute: MapRoute,
+  ScanRoute: ScanRoute,
   SearchRoute: SearchRoute,
   WishlistRoute: WishlistRoute,
   ProductProductIdRoute: ProductProductIdRoute,
