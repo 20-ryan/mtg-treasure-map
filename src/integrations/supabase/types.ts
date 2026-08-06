@@ -185,6 +185,48 @@ export type Database = {
         }
         Relationships: []
       }
+      user_collections: {
+        Row: {
+          card_name: string
+          collector_number: string | null
+          created_at: string
+          id: string
+          image_url: string | null
+          quantity: number
+          rarity: string
+          set_code: string
+          set_name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          card_name: string
+          collector_number?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          quantity?: number
+          rarity?: string
+          set_code?: string
+          set_name?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          card_name?: string
+          collector_number?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          quantity?: number
+          rarity?: string
+          set_code?: string
+          set_name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       wishlist_items: {
         Row: {
           created_at: string
