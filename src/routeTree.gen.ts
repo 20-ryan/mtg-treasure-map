@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as MapRouteImport } from './routes/map'
+import { Route as ScanRouteImport } from './routes/scan'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as WishlistRouteImport } from './routes/wishlist'
 import { Route as ProductProductIdRouteImport } from './routes/product.$productId'
@@ -30,6 +31,11 @@ const AccountRoute = AccountRouteImport.update({
 const MapRoute = MapRouteImport.update({
   id: '/map',
   path: '/map',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ScanRoute = ScanRouteImport.update({
+  id: '/scan',
+  path: '/scan',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SearchRoute = SearchRouteImport.update({
@@ -57,6 +63,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/map': typeof MapRoute
+  '/scan': typeof ScanRoute
   '/search': typeof SearchRoute
   '/wishlist': typeof WishlistRoute
   '/product/$productId': typeof ProductProductIdRoute
@@ -66,6 +73,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/map': typeof MapRoute
+  '/scan': typeof ScanRoute
   '/search': typeof SearchRoute
   '/wishlist': typeof WishlistRoute
   '/product/$productId': typeof ProductProductIdRoute
@@ -76,6 +84,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/map': typeof MapRoute
+  '/scan': typeof ScanRoute
   '/search': typeof SearchRoute
   '/wishlist': typeof WishlistRoute
   '/product/$productId': typeof ProductProductIdRoute
@@ -87,6 +96,7 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/map'
+    | '/scan'
     | '/search'
     | '/wishlist'
     | '/product/$productId'
@@ -96,6 +106,7 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/map'
+    | '/scan'
     | '/search'
     | '/wishlist'
     | '/product/$productId'
@@ -105,6 +116,7 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/map'
+    | '/scan'
     | '/search'
     | '/wishlist'
     | '/product/$productId'
@@ -115,6 +127,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountRoute: typeof AccountRoute
   MapRoute: typeof MapRoute
+  ScanRoute: typeof ScanRoute
   SearchRoute: typeof SearchRoute
   WishlistRoute: typeof WishlistRoute
   ProductProductIdRoute: typeof ProductProductIdRoute
@@ -142,6 +155,13 @@ declare module '@tanstack/react-router' {
       path: '/map'
       fullPath: '/map'
       preLoaderRoute: typeof MapRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/scan': {
+      id: '/scan'
+      path: '/scan'
+      fullPath: '/scan'
+      preLoaderRoute: typeof ScanRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/search': {
@@ -179,6 +199,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
   MapRoute: MapRoute,
+  ScanRoute: ScanRoute,
   SearchRoute: SearchRoute,
   WishlistRoute: WishlistRoute,
   ProductProductIdRoute: ProductProductIdRoute,
@@ -187,13 +208,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
