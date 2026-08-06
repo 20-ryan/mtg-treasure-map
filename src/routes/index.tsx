@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Search, Sparkles, MapPin, Navigation } from "lucide-react";
+import { Search, Sparkles, MapPin, Navigation, Heart } from "lucide-react";
+import { useWishlist } from "@/lib/wishlist";
 import { GoogleStoreMap } from "@/components/app/GoogleStoreMap";
 import { ProductCard } from "@/components/app/ProductCard";
 import { StoreCard } from "@/components/app/StoreCard";
@@ -38,6 +39,7 @@ function HomePage() {
   const { stores, products, inventory, isLoading } = useCatalog();
   const [query, setQuery] = useState("");
   const [activeId, setActiveId] = useState<string | undefined>(undefined);
+  const { items: wished } = useWishlist();
 
   const nearby = useMemo(
     () =>
@@ -62,6 +64,18 @@ function HomePage() {
     <div className="pb-6">
       <header className="relative overflow-hidden px-4 pb-5 pt-8">
         <div className="pointer-events-none absolute -right-16 -top-24 h-56 w-56 rounded-full bg-primary/15 blur-3xl" />
+        <Link
+          to="/wishlist"
+          aria-label="Wishlist"
+          className="absolute right-4 top-7 grid h-10 w-10 place-items-center rounded-full border border-border bg-card"
+        >
+          <Heart className="h-4.5 w-4.5 text-primary" />
+          {wished.length > 0 && (
+            <span className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-accent px-1 text-[9px] font-bold text-accent-foreground">
+              {wished.length}
+            </span>
+          )}
+        </Link>
         <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-primary">Singapore</p>
         <h1 className="mt-1 font-display text-3xl font-bold leading-tight">
           <span className="text-gradient-gold">MTG SG Finder</span>
