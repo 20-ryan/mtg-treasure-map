@@ -52,6 +52,7 @@ export const identifyCard = createServerFn({ method: "POST" })
       collector_number?: string | null;
     };
     if (!parsed.card_name) throw new Error("No Magic card detected in that image.");
+    let cardName: string = parsed.card_name;
 
     // Enrich with official artwork + printing data from Scryfall.
     let image_url: string | null = null;
@@ -71,14 +72,14 @@ export const identifyCard = createServerFn({ method: "POST" })
         set_name = card.set_name ?? set_name;
         rarity = card.rarity ?? rarity;
         collector_number = card.collector_number ?? collector_number;
-        parsed.card_name = card.name ?? parsed.card_name;
+        cardName = (card.name as string) ?? cardName;
       }
     } catch {
       /* Scryfall enrichment is best-effort. */
     }
 
     return {
-      card_name: parsed.card_name,
+      card_name: cardName,
       set_code,
       set_name,
       rarity,
