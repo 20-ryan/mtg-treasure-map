@@ -101,7 +101,10 @@ function CardScanner() {
 
   async function handleFile(file: File | undefined) {
     if (!file) return;
-    if (file.size > 6_000_000) return toast.error("That photo is too large — try one under 6MB.");
+    if (file.size > 6_000_000) {
+      toast.error("That photo is too large — try one under 6MB.");
+      return;
+    }
     const dataUrl = await readFile(file);
     setPreview(dataUrl);
     setResult(null);
@@ -234,7 +237,10 @@ function ReceiptScanner() {
 
   async function handleFile(file: File | undefined) {
     if (!file) return;
-    if (file.size > 6_000_000) return toast.error("That photo is too large — try one under 6MB.");
+    if (file.size > 6_000_000) {
+      toast.error("That photo is too large — try one under 6MB.");
+      return;
+    }
     setBusy(true);
     try {
       const dataUrl = await readFile(file);
