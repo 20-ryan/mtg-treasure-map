@@ -35,6 +35,9 @@ export type Store = {
   website: string | null;
   facebook: string | null;
   tags: string[];
+  google_maps_url: string | null;
+  rating: number | null;
+  photos: string[] | null;
 };
 
 export type Product = {
@@ -124,10 +127,26 @@ export function distanceKm(
   return Math.round(2 * R * Math.asin(Math.sqrt(s)) * 10) / 10;
 }
 
+/** Text shown wherever a store has not verified a detail. */
+export const UNAVAILABLE = "Information unavailable";
+
+/** Returns the value, or the "Information unavailable" placeholder. */
+export function info(value: string | null | undefined) {
+  const trimmed = value?.trim();
+  return trimmed && trimmed !== UNAVAILABLE ? trimmed : UNAVAILABLE;
+}
+
+export function hasInfo(value: string | null | undefined) {
+  return info(value) !== UNAVAILABLE;
+}
+
 export function directionsUrl(store: Store) {
-  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
-    `${store.name}, ${store.address}, Singapore ${store.postal_code}`,
-  )}`;
+  return (
+    store.google_maps_url ??
+    `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
+      `${store.name}, ${store.address}, Singapore ${store.postal_code}`,
+    )}`
+  );
 }
 
 export function minutesAgo(iso: string) {
