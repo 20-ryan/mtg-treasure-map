@@ -14,6 +14,72 @@ export type Database = {
   }
   public: {
     Tables: {
+      achievements: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          id: string
+          name: string
+          requirement_type: string
+          requirement_value: number
+          xp_reward: number
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description: string
+          id: string
+          name: string
+          requirement_type: string
+          requirement_value: number
+          xp_reward?: number
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          id?: string
+          name?: string
+          requirement_type?: string
+          requirement_value?: number
+          xp_reward?: number
+        }
+        Relationships: []
+      }
+      challenges: {
+        Row: {
+          cadence: string
+          created_at: string
+          description: string
+          id: string
+          requirement_type: string
+          requirement_value: number
+          title: string
+          xp_reward: number
+        }
+        Insert: {
+          cadence: string
+          created_at?: string
+          description: string
+          id: string
+          requirement_type: string
+          requirement_value: number
+          title: string
+          xp_reward?: number
+        }
+        Update: {
+          cadence?: string
+          created_at?: string
+          description?: string
+          id?: string
+          requirement_type?: string
+          requirement_value?: number
+          title?: string
+          xp_reward?: number
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           category: string
@@ -65,29 +131,116 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          coins: number
           created_at: string
           display_name: string | null
+          favorite_store_id: string | null
           id: string
           level: number
           xp: number
         }
         Insert: {
           avatar_url?: string | null
+          coins?: number
           created_at?: string
           display_name?: string | null
+          favorite_store_id?: string | null
           id: string
           level?: number
           xp?: number
         }
         Update: {
           avatar_url?: string | null
+          coins?: number
           created_at?: string
           display_name?: string | null
+          favorite_store_id?: string | null
           id?: string
           level?: number
           xp?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_favorite_store_id_fkey"
+            columns: ["favorite_store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      purchases: {
+        Row: {
+          id: string
+          price: number
+          product_description: string
+          purchase_date: string
+          quantity: number
+          receipt_image: string | null
+          store_id: string | null
+          store_name: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          price?: number
+          product_description: string
+          purchase_date?: string
+          quantity?: number
+          receipt_image?: string | null
+          store_id?: string | null
+          store_name?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          price?: number
+          product_description?: string
+          purchase_date?: string
+          quantity?: number
+          receipt_image?: string | null
+          store_id?: string | null
+          store_name?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchases_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      store_check_ins: {
+        Row: {
+          check_in_date: string
+          id: string
+          store_id: string
+          user_id: string
+        }
+        Insert: {
+          check_in_date?: string
+          id?: string
+          store_id: string
+          user_id: string
+        }
+        Update: {
+          check_in_date?: string
+          id?: string
+          store_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_check_ins_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       store_inventory: {
         Row: {
@@ -134,6 +287,44 @@ export type Database = {
           },
         ]
       }
+      store_photos: {
+        Row: {
+          caption: string | null
+          created_at: string
+          id: string
+          photo_url: string
+          status: string
+          store_id: string
+          user_id: string
+        }
+        Insert: {
+          caption?: string | null
+          created_at?: string
+          id?: string
+          photo_url: string
+          status?: string
+          store_id: string
+          user_id: string
+        }
+        Update: {
+          caption?: string | null
+          created_at?: string
+          id?: string
+          photo_url?: string
+          status?: string
+          store_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_photos_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       stores: {
         Row: {
           address: string
@@ -141,13 +332,16 @@ export type Database = {
           blurb: string
           created_at: string
           facebook: string | null
+          google_maps_url: string
           hours: string
           id: string
           lat: number
           lng: number
           name: string
           phone: string | null
+          photos: string[]
           postal_code: string
+          rating: number | null
           tags: string[]
           website: string | null
         }
@@ -157,13 +351,16 @@ export type Database = {
           blurb?: string
           created_at?: string
           facebook?: string | null
+          google_maps_url?: string
           hours: string
           id: string
           lat: number
           lng: number
           name: string
           phone?: string | null
+          photos?: string[]
           postal_code: string
+          rating?: number | null
           tags?: string[]
           website?: string | null
         }
@@ -173,17 +370,87 @@ export type Database = {
           blurb?: string
           created_at?: string
           facebook?: string | null
+          google_maps_url?: string
           hours?: string
           id?: string
           lat?: number
           lng?: number
           name?: string
           phone?: string | null
+          photos?: string[]
           postal_code?: string
+          rating?: number | null
           tags?: string[]
           website?: string | null
         }
         Relationships: []
+      }
+      user_achievements: {
+        Row: {
+          achievement_id: string
+          date_unlocked: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          achievement_id: string
+          date_unlocked?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          achievement_id?: string
+          date_unlocked?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_achievements_achievement_id_fkey"
+            columns: ["achievement_id"]
+            isOneToOne: false
+            referencedRelation: "achievements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_challenges: {
+        Row: {
+          challenge_id: string
+          completed_at: string | null
+          id: string
+          period_key: string
+          progress: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          challenge_id: string
+          completed_at?: string | null
+          id?: string
+          period_key: string
+          progress?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          challenge_id?: string
+          completed_at?: string | null
+          id?: string
+          period_key?: string
+          progress?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_challenges_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "challenges"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_collections: {
         Row: {

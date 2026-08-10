@@ -2,9 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Navigation, Clock, Phone, Crosshair, Globe } from "lucide-react";
 import { PageHeader } from "@/components/app/PageHeader";
-import { GoogleStoreMap } from "@/components/app/GoogleStoreMap";
+import { StoreMap } from "@/components/app/StoreMap";
 import { useGeolocation } from "@/lib/geo";
-import { directionsUrl, distanceKm, useCatalog } from "@/lib/mtg";
+import { directionsUrl, distanceKm, info, hasInfo, useCatalog, type Store } from "@/lib/mtg";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/map")({
@@ -14,12 +14,12 @@ export const Route = createFileRoute("/map")({
       {
         name: "description",
         content:
-          "Google Map of Singapore's Magic: The Gathering stores — Dueller's Point, Manchi Games and Games Haven Ang Mo Kio.",
+          "OpenStreetMap view of Singapore's three Magic: The Gathering stores — Dueller's Point, Manchi Games and Games Haven Ang Mo Kio.",
       },
       { property: "og:title", content: "Store Map — MTG SG Finder" },
       {
         property: "og:description",
-        content: "Tap a marker for hours, stock and Google Maps directions.",
+        content: "Tap a marker for hours, inventory and Google Maps directions.",
       },
     ],
   }),
@@ -39,13 +39,13 @@ function MapPage() {
     [stores, coords],
   );
 
-  const active = stores.find((s) => s.id === activeId) ?? ranked[0]?.store;
+  const active: Store | undefined = stores.find((s) => s.id === activeId) ?? ranked[0]?.store;
 
   return (
     <div className="pb-8">
       <PageHeader
         title="Singapore stores"
-        subtitle={status === "granted" ? "Using your live location" : "Central Singapore default"}
+        subtitle={status === "granted" ? "Sorted by your live distance" : "Central Singapore default"}
         action={
           <span className="grid h-9 w-9 place-items-center rounded-full border border-border text-primary">
             <Crosshair className="h-4 w-4" />
@@ -54,7 +54,7 @@ function MapPage() {
       />
 
       <div className="space-y-4 px-4 pt-4">
-        <GoogleStoreMap
+        <StoreMap
           stores={stores}
           activeId={active?.id}
           user={status === "granted" ? coords : undefined}
@@ -77,16 +77,20 @@ function MapPage() {
             </div>
             <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-muted-foreground">
               <span className="flex items-center gap-1">
-                <Clock className="h-3 w-3" /> {active.hours}
+                <Clock className="h-3 w-3" /> {info(active.hours)}
               </span>
-              {active.phone && (
-                <a href={`tel:${active.phone.replace(/\s/g, "")}`} className="flex items-center gap-1 hover:text-primary">
+              {hasInfo(active.phone) ? (
+                <a href={`tel:${active.phone!.replace(/\s/g, "")}`} className="flex items-center gap-1 hover:text-primary">
                   <Phone className="h-3 w-3" /> {active.phone}
                 </a>
+              ) : (
+                <span className="flex items-center gap-1">
+                  <Phone className="h-3 w-3" /> {info(active.phone)}
+                </span>
               )}
-              {active.website && (
+              {hasInfo(active.website) && (
                 <a
-                  href={active.website.startsWith("http") ? active.website : `https://${active.website}`}
+                  href={active.website!.startsWith("http") ? active.website! : `https://${active.website}`}
                   target="_blank"
                   rel="noreferrer"
                   className="flex items-center gap-1 hover:text-primary"
@@ -112,7 +116,7 @@ function MapPage() {
                 rel="noreferrer"
                 className="flex items-center justify-center gap-1.5 rounded-lg bg-linear-to-r from-primary to-warning py-2.5 text-xs font-bold text-primary-foreground"
               >
-                <Navigation className="h-3.5 w-3.5" /> Directions
+                <Navigation className="h-3.5 w-3.5" /> Get Directions
               </a>
             </div>
           </div>
@@ -131,7 +135,7 @@ function MapPage() {
             >
               <div className="min-w-0">
                 <p className="truncate text-sm font-semibold">{store.name}</p>
-                <p className="truncate text-[11px] text-muted-foreground">{store.tags.join(" · ")}</p>
+                <p className="truncate text-[11px] text-muted-foreground">{store.area}</p>
               </div>
               <span className="shrink-0 text-xs font-semibold text-primary">{distance} km</span>
             </button>

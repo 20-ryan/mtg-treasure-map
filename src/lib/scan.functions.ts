@@ -87,3 +87,61 @@ export const identifyCard = createServerFn({ method: "POST" })
       image_url,
     };
   });
+
+export type ReceiptLine = {
+  product_description: string;
+  quantity: number;
+  price: number | null;
+};
+
+export const parseReceipt = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => input.parse(data))
+  .handler(async ({ data }) => {
+    const apiKey = process.env["LOVABLE_API_KEY"];
+    if (!apiKey) throw new Error("AI is not configured.");
+
+    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash",
+        messages: [
+          {
+            role: "system",
+            content:
+              "You read photos of retail receipts from Singapore game stores. Reply with ONLY minified JSON: " +
+              '{"store_name":string|null,"items":[{"product_description":string,"quantity":number,"price":number|null}]}. ' +
+              "Prices are SGD numbers without currency symbols. If nothing is readable return {\"store_name\":null,\"items\":[]}.",
+          },
+          {
+            role: "user",
+            content: [
+              { type: "text", text: "Extract the store name and purchased line items from this receipt." },
+              { type: "image_url", image_url: { url: data.image } },
+            ],
+          },
+        ],
+      }),
+    });
+
+    if (!res.ok) {
+      const body = await res.text();
+      if (res.status === 429) throw new Error("Too many scans right now — try again in a moment.");
+      if (res.status === 402) throw new Error("AI credits exhausted. Top up to keep scanning.");
+      throw new Error(`Receipt reading failed [${res.status}]: ${body}`);
+    }
+
+    const json = (await res.json()) as { choices?: { message?: { content?: string } }[] };
+    const match = (json.choices?.[0]?.message?.content ?? "").match(/\{[\s\S]*\}/);
+    if (!match) throw new Error("Could not read that receipt. Try a flatter, brighter photo.");
+    const parsed = JSON.parse(match[0]) as { store_name?: string | null; items?: ReceiptLine[] };
+    const items = (parsed.items ?? [])
+      .filter((i) => i && typeof i.product_description === "string" && i.product_description.trim())
+      .map((i) => ({
+        product_description: i.product_description.trim().slice(0, 120),
+        quantity: Number.isFinite(i.quantity) && i.quantity > 0 ? Math.round(i.quantity) : 1,
+        price: typeof i.price === "number" && Number.isFinite(i.price) ? i.price : null,
+      }));
+    if (!items.length) throw new Error("No purchase lines found on that receipt.");
+    return { store_name: parsed.store_name ?? null, items };
+  });
