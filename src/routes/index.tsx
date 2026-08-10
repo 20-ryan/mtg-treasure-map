@@ -1,18 +1,15 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Search, Sparkles, MapPin, Navigation, Heart } from "lucide-react";
+import { Search, MapPin, Navigation, Heart, Camera, QrCode, Layers, Trophy } from "lucide-react";
 import { useWishlist } from "@/lib/wishlist";
-import { GoogleStoreMap } from "@/components/app/GoogleStoreMap";
+import { StoreMap } from "@/components/app/StoreMap";
 import { ProductCard } from "@/components/app/ProductCard";
 import { StoreCard } from "@/components/app/StoreCard";
 import { useGeolocation } from "@/lib/geo";
-import {
-  directionsUrl,
-  distanceKm,
-  FEATURED_SETS,
-  useCatalog,
-  type Store,
-} from "@/lib/mtg";
+import { directionsUrl, distanceKm, UNAVAILABLE, useCatalog, type Store } from "@/lib/mtg";
+import { levelFromXp, useCollection, useProfile } from "@/lib/collection";
+import { levelTitle, useChallenges, useUserChallenges, periodKey } from "@/lib/gamification";
+import { useAuth } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -21,17 +18,24 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Find Magic: The Gathering singles, boosters, Commander decks and accessories in stock at Dueller's Point, Manchi Games and Games Haven AMK.",
+          "Find Magic: The Gathering singles, boosters, Commander decks and accessories at Dueller's Point, Manchi Games and Games Haven Ang Mo Kio.",
       },
       { property: "og:title", content: "MTG SG Finder" },
       {
         property: "og:description",
-        content: "Live Magic inventory and directions for Singapore's local game stores.",
+        content: "Store map, live inventory, AI card scanner and collection XP for Singapore Magic players.",
       },
     ],
   }),
   component: HomePage,
 });
+
+const QUICK = [
+  { to: "/scan", label: "Scan card", icon: Camera },
+  { to: "/scan", label: "Check in", icon: QrCode },
+  { to: "/collection", label: "Collection", icon: Layers },
+  { to: "/account", label: "Badges", icon: Trophy },
+] as const;
 
 function HomePage() {
   const navigate = useNavigate();
@@ -40,6 +44,14 @@ function HomePage() {
   const [query, setQuery] = useState("");
   const [activeId, setActiveId] = useState<string | undefined>(undefined);
   const { items: wished } = useWishlist();
+  const { user } = useAuth();
+  const { data: profile } = useProfile();
+  const { data: cards = [] } = useCollection();
+  const { data: challenges = [] } = useChallenges();
+  const { data: userChallenges = [] } = useUserChallenges();
+
+  const progress = levelFromXp(profile?.xp ?? 0);
+  const owned = cards.reduce((n, c) => n + c.quantity, 0);
 
   const nearby = useMemo(
     () =>
@@ -49,15 +61,7 @@ function HomePage() {
     [stores, coords],
   );
 
-  const trending = useMemo(
-    () => products.filter((p) => p.category === "single").slice(0, 4),
-    [products],
-  );
-  const sealed = useMemo(
-    () => products.filter((p) => p.category !== "single" && p.category !== "accessory").slice(0, 4),
-    [products],
-  );
-
+  const trending = useMemo(() => products.slice(0, 4), [products]);
   const active: Store | undefined = stores.find((s) => s.id === activeId);
 
   return (
@@ -80,16 +84,39 @@ function HomePage() {
         <h1 className="mt-1 font-display text-3xl font-bold leading-tight">
           <span className="text-gradient-gold">MTG SG Finder</span>
         </h1>
-        <p className="mt-2 max-w-xs text-sm text-muted-foreground">
-          Live stock, prices and directions for Singapore's Magic game stores.
-        </p>
+
+        {user ? (
+          <div className="mt-4 rounded-2xl border border-border bg-card/80 p-3.5">
+            <div className="flex items-baseline justify-between">
+              <p className="text-sm font-semibold">
+                Level {progress.level} · <span className="text-primary">{levelTitle(progress.level)}</span>
+              </p>
+              <span className="text-[11px] text-muted-foreground">
+                {progress.into}/{progress.need} XP
+              </span>
+            </div>
+            <div className="mt-2 h-2 overflow-hidden rounded-full bg-muted">
+              <div
+                className="h-full rounded-full bg-linear-to-r from-accent to-primary transition-all"
+                style={{ width: `${Math.min(100, (progress.into / progress.need) * 100)}%` }}
+              />
+            </div>
+            <p className="mt-2 text-[11px] text-muted-foreground">
+              {owned} cards collected · {profile?.coins ?? 0} coins
+            </p>
+          </div>
+        ) : (
+          <p className="mt-2 max-w-xs text-sm text-muted-foreground">
+            Live stock, directions and a card scanner for Singapore's three Magic stores.
+          </p>
+        )}
 
         <form
           onSubmit={(e) => {
             e.preventDefault();
             void navigate({ to: "/search", search: { q: query } });
           }}
-          className="mt-5"
+          className="mt-4"
         >
           <div className="flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2.5">
             <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
@@ -107,6 +134,19 @@ function HomePage() {
             </button>
           </div>
         </form>
+
+        <div className="mt-4 grid grid-cols-4 gap-2">
+          {QUICK.map(({ to, label, icon: Icon }) => (
+            <Link
+              key={label}
+              to={to}
+              className="flex flex-col items-center gap-1.5 rounded-xl border border-border bg-card py-3 text-[10px] font-semibold text-muted-foreground"
+            >
+              <Icon className="h-4.5 w-4.5 text-primary" />
+              {label}
+            </Link>
+          ))}
+        </div>
       </header>
 
       <section className="space-y-3 px-4">
@@ -116,7 +156,7 @@ function HomePage() {
             Full map
           </Link>
         </div>
-        <GoogleStoreMap
+        <StoreMap
           stores={stores}
           activeId={activeId}
           user={status === "granted" ? coords : undefined}
@@ -150,50 +190,36 @@ function HomePage() {
         )}
       </section>
 
-      <section className="mt-7 space-y-3">
-        <h2 className="px-4 font-display text-lg font-semibold">Featured sets</h2>
-        <div className="flex snap-x gap-3 overflow-x-auto px-4 pb-1">
-          {FEATURED_SETS.map((set) => (
-            <Link
-              key={set.code}
-              to="/search"
-              search={{ q: set.name }}
-              className="w-32 shrink-0 snap-start rounded-xl border border-border bg-card p-3"
-              style={{ background: `linear-gradient(160deg, oklch(0.3 0.09 ${set.hue} / 0.55), transparent)` }}
-            >
-              <span className="font-display text-xl font-bold text-primary">{set.code}</span>
-              <p className="mt-1 truncate text-xs font-medium">{set.name}</p>
-              <p className="text-[10px] text-muted-foreground">{set.released}</p>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      <section className="mt-7 space-y-3 px-4">
-        <div className="flex items-end justify-between">
-          <h2 className="flex items-center gap-2 font-display text-lg font-semibold">
-            <Sparkles className="h-4 w-4 text-primary" /> Trending singles
-          </h2>
-          <Link to="/search" search={{ q: "" }} className="text-xs font-semibold text-primary">
-            See all
-          </Link>
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          {trending.map((p) => (
-            <ProductCard key={p.id} product={p} inventory={inventory} stores={stores} />
-          ))}
-        </div>
-        {isLoading && <p className="text-center text-xs text-muted-foreground">Loading catalog…</p>}
-      </section>
-
-      <section className="mt-7 space-y-3 px-4">
-        <h2 className="font-display text-lg font-semibold">Sealed &amp; decks</h2>
-        <div className="grid grid-cols-2 gap-3">
-          {sealed.map((p) => (
-            <ProductCard key={p.id} product={p} inventory={inventory} stores={stores} />
-          ))}
-        </div>
-      </section>
+      {user && challenges.length > 0 && (
+        <section className="mt-7 space-y-3 px-4">
+          <h2 className="font-display text-lg font-semibold">Active challenges</h2>
+          <div className="space-y-2">
+            {challenges.map((c) => {
+              const uc = userChallenges.find(
+                (u) => u.challenge_id === c.id && u.period_key === periodKey(c.cadence),
+              );
+              const pct = Math.min(100, ((uc?.progress ?? 0) / c.requirement_value) * 100);
+              return (
+                <div key={c.id} className="rounded-xl border border-border bg-card p-3">
+                  <div className="flex items-baseline justify-between gap-2">
+                    <p className="truncate text-sm font-semibold">{c.title}</p>
+                    <span className="shrink-0 text-[10px] uppercase tracking-wide text-primary">
+                      {c.cadence} · +{c.xp_reward} XP
+                    </span>
+                  </div>
+                  <p className="mt-0.5 text-[11px] text-muted-foreground">{c.description}</p>
+                  <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted">
+                    <div className="h-full rounded-full bg-accent" style={{ width: `${pct}%` }} />
+                  </div>
+                  <p className="mt-1 text-right text-[10px] text-muted-foreground">
+                    {uc?.progress ?? 0}/{c.requirement_value}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       <section className="mt-7 space-y-3 px-4">
         <div className="flex items-end justify-between">
@@ -207,15 +233,30 @@ function HomePage() {
             <StoreCard key={store.id} store={store} distance={distance} />
           ))}
         </div>
-        {!isLoading && stores.length === 0 && (
+      </section>
+
+      <section className="mt-7 space-y-3 px-4">
+        <div className="flex items-end justify-between">
+          <h2 className="font-display text-lg font-semibold">Products</h2>
+          <Link to="/search" search={{ q: "" }} className="text-xs font-semibold text-primary">
+            See all
+          </Link>
+        </div>
+        {trending.length > 0 ? (
+          <div className="grid grid-cols-2 gap-3">
+            {trending.map((p) => (
+              <ProductCard key={p.id} product={p} inventory={inventory} stores={stores} />
+            ))}
+          </div>
+        ) : (
           <p className="rounded-xl border border-dashed border-border p-6 text-center text-xs text-muted-foreground">
-            No stores loaded yet.
+            {isLoading ? "Loading catalog…" : UNAVAILABLE}
           </p>
         )}
       </section>
 
       <p className="mt-8 px-4 text-center text-[10px] text-muted-foreground">
-        Prices shown in SGD. Stock updates live from participating stores.
+        Prices in SGD. Store details show "{UNAVAILABLE}" until confirmed by the store.
       </p>
     </div>
   );
