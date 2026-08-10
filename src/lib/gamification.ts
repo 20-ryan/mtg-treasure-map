@@ -273,14 +273,21 @@ export function useGamification() {
   }
 
   async function logPurchase(entry: {
-    store_id: string | null;
-    store_name: string | null;
+    store_id?: string | null;
+    store_name?: string | null;
     product_description: string;
     quantity: number;
-    price: number | null;
+    price?: number | null;
   }) {
     if (!user) throw new Error("Sign in to log purchases.");
-    const { error } = await supabase.from("purchases").insert({ user_id: user.id, ...entry });
+    const { error } = await supabase.from("purchases").insert({
+      user_id: user.id,
+      product_description: entry.product_description,
+      quantity: entry.quantity,
+      ...(entry.store_id ? { store_id: entry.store_id } : {}),
+      ...(entry.store_name ? { store_name: entry.store_name } : {}),
+      ...(typeof entry.price === "number" ? { price: entry.price } : {}),
+    });
     if (error) throw error;
     await awardXp(XP_REWARDS.receipt);
     await qc.invalidateQueries({ queryKey: ["purchases", user.id] });

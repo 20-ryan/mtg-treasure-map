@@ -5,7 +5,7 @@ import type { StoreMapProps } from "./StoreMapImpl";
 
 const Impl = lazy(() => import("./StoreMapImpl"));
 
-function Placeholder({ className }: { className?: string }) {
+function Placeholder({ className }: { className?: string | undefined }) {
   return (
     <div
       className={`grid place-items-center overflow-hidden rounded-2xl border border-border bg-card ${className ?? "h-64"}`}
