@@ -12,10 +12,10 @@ export function ArrivalModal({ store, onCheckIn, onDismiss }: Props) {
 
   return (
     <div className="fixed inset-x-4 top-6 z-50 mx-auto max-w-lg animate-in slide-in-from-top-4 fade-in">
-      <div className="flex flex-col gap-3 rounded-2xl border-2 border-primary/70 bg-card p-4 text-card-foreground shadow-2xl">
+      <div className="flex flex-col gap-3 rounded-2xl border-2 border-primary/70 bg-card p-4 text-card-foreground shadow-[0_0_35px_-5px_hsl(var(--primary)/0.7)] ring-1 ring-primary/30">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-2">
-            <MapPin className="h-6 w-6 shrink-0 text-primary" />
+            <MapPin className="h-6 w-6 shrink-0 animate-pulse text-primary" />
             <div className="min-w-0">
               <h4 className="truncate font-bold text-primary">You're at {store.name}!</h4>
               <p className="text-xs text-muted-foreground">Ready to check in and earn +20 XP?</p>
@@ -39,14 +39,14 @@ export function ArrivalModal({ store, onCheckIn, onDismiss }: Props) {
             }}
             className="flex-1 rounded-xl bg-linear-to-r from-primary to-warning py-2 text-xs font-bold text-primary-foreground"
           >
-            Check in now (+20 XP)
+            Scan Store QR Code (+20 XP)
           </button>
           <button
             type="button"
             onClick={onDismiss}
             className="rounded-xl border border-border px-3 text-xs text-muted-foreground"
           >
-            Later
+            Dismiss
           </button>
         </div>
       </div>
