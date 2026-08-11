@@ -59,6 +59,7 @@ function MapPage() {
           activeId={active?.id}
           user={status === "granted" ? coords : undefined}
           onSelect={(s) => setActiveId(s.id)}
+          inventoryCount={(id) => inventory.filter((l) => l.store_id === id && l.stock > 0).length}
           className="h-80"
         />
 
