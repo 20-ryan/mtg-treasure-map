@@ -3,13 +3,14 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import type { Store } from "@/lib/mtg";
-import { SG_CENTER } from "@/lib/mtg";
+import { SG_CENTER, directionsUrl, distanceKm, info } from "@/lib/mtg";
 
 export type StoreMapProps = {
   stores: Store[];
   activeId?: string | undefined;
   user?: { lat: number; lng: number } | undefined;
   onSelect?: (store: Store) => void;
+  inventoryCount?: (storeId: string) => number;
   className?: string;
 };
 
@@ -48,9 +49,11 @@ export default function StoreMapImpl({
   activeId,
   user,
   onSelect,
+  inventoryCount,
   className,
 }: StoreMapProps) {
   const active = stores.find((s) => s.id === activeId) ?? null;
+  const origin = user ?? SG_CENTER;
 
   return (
     <div className={`overflow-hidden rounded-2xl border border-border ${className ?? "h-64"}`}>
@@ -61,8 +64,8 @@ export default function StoreMapImpl({
         style={{ height: "100%", width: "100%", background: "#12101a" }}
       >
         <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
         <Recenter target={active ? { lat: active.lat, lng: active.lng } : null} />
         {user && <Marker position={[user.lat, user.lng]} icon={userIcon} />}
@@ -74,9 +77,26 @@ export default function StoreMapImpl({
             eventHandlers={{ click: () => onSelect?.(store) }}
           >
             <Popup>
-              <strong>{store.name}</strong>
-              <br />
-              {store.address}, Singapore {store.postal_code}
+              <div style={{ minWidth: 200 }}>
+                <strong>{store.name}</strong>
+                <div style={{ marginTop: 2 }}>
+                  {store.address}, Singapore {store.postal_code}
+                </div>
+                <div style={{ marginTop: 4 }}>
+                  {distanceKm(origin, store)} km away
+                </div>
+                <div>Rating: {store.rating ?? "Information unavailable"}</div>
+                <div>Hours: {info(store.hours)}</div>
+                <div>
+                  Inventory: {inventoryCount ? `${inventoryCount(store.id)} products in stock` : "Information unavailable"}
+                </div>
+                <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                  <a href={`/store/${store.id}`}>View Store</a>
+                  <a href={directionsUrl(store)} target="_blank" rel="noopener noreferrer">
+                    Open in Google Maps
+                  </a>
+                </div>
+              </div>
             </Popup>
           </Marker>
         ))}
