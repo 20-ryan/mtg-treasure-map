@@ -11,9 +11,10 @@ import { achievementStats, useGamification, usePurchases } from "@/lib/gamificat
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/scan")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    mode: search['mode'] === "checkin" || search['mode'] === "receipt" || search['mode'] === "card" ? (search['mode'] as Mode) : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>): { mode?: Mode } => {
+    const m = search['mode'];
+    return m === "checkin" || m === "receipt" || m === "card" ? { mode: m } : {};
+  },
   head: () => ({
     meta: [
       { title: "Scanner & Check-in — MTG SG Finder" },
