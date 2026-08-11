@@ -11,6 +11,10 @@ import { achievementStats, useGamification, usePurchases } from "@/lib/gamificat
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/scan")({
+  validateSearch: (search: Record<string, unknown>): { mode?: Mode } => {
+    const m = search['mode'];
+    return m === "checkin" || m === "receipt" || m === "card" ? { mode: m } : {};
+  },
   head: () => ({
     meta: [
       { title: "Scanner & Check-in — MTG SG Finder" },
@@ -44,8 +48,13 @@ function readFile(file: File) {
 }
 
 function ScanPage() {
-  const [mode, setMode] = useState<Mode>("card");
+  const { mode: initialMode } = Route.useSearch();
+  const [mode, setMode] = useState<Mode>(initialMode ?? "card");
   const { signedIn } = useCollectionActions();
+
+  useEffect(() => {
+    if (initialMode) setMode(initialMode);
+  }, [initialMode]);
 
   return (
     <div className="pb-10">

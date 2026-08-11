@@ -10,20 +10,14 @@ export function ArrivalWatcher() {
   const { checkIn, signedIn } = useGamification();
   const navigate = useNavigate();
 
-  async function handleCheckIn(storeId: string) {
+  function handleCheckIn(_storeId: string) {
     if (!signedIn) {
       toast.info("Sign in to check in and earn XP.");
       void navigate({ to: "/account" });
       return;
     }
-    try {
-      const res = await checkIn(storeId);
-      toast.success(res.repeat ? "You already checked in here today." : `Checked in · +${res.xp} XP`);
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Check-in failed.");
-      void navigate({ to: "/scan" });
-    }
+    void navigate({ to: "/scan", search: { mode: "checkin" } });
   }
 
-  return <ArrivalModal store={arrivedStore} onCheckIn={(id) => void handleCheckIn(id)} onDismiss={dismissArrival} />;
+  return <ArrivalModal store={arrivedStore} onCheckIn={handleCheckIn} onDismiss={dismissArrival} />;
 }
