@@ -15,6 +15,7 @@ import { BottomNav } from "@/components/app/BottomNav";
 import { WishlistProvider } from "@/lib/wishlist";
 import { AuthProvider } from "@/hooks/useAuth";
 import { Toaster } from "@/components/ui/sonner";
+import { ArrivalWatcher } from "@/components/app/ArrivalWatcher";
 
 function NotFoundComponent() {
   return (
@@ -142,6 +143,7 @@ function RootComponent() {
             <Outlet />
           </div>
           <BottomNav />
+          <ArrivalWatcher />
           <Toaster position="top-center" />
         </WishlistProvider>
       </AuthProvider>
