@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Search, MapPin, Navigation, Heart, Camera, QrCode, Layers, Trophy } from "lucide-react";
+import { Search, MapPin, Navigation, Heart, Camera, QrCode, Layers, Trophy, Sparkles } from "lucide-react";
 import { useWishlist } from "@/lib/wishlist";
 import { StoreMap } from "@/components/app/StoreMap";
 import { ProductCard } from "@/components/app/ProductCard";
