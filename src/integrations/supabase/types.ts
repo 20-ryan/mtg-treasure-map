@@ -47,6 +47,47 @@ export type Database = {
         }
         Relationships: []
       }
+      ar_collectibles: {
+        Row: {
+          created_at: string
+          description: string
+          icon: string
+          id: string
+          name: string
+          rarity: string
+          store_id: string
+          xp_reward: number
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          icon?: string
+          id: string
+          name: string
+          rarity?: string
+          store_id: string
+          xp_reward?: number
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          icon?: string
+          id?: string
+          name?: string
+          rarity?: string
+          store_id?: string
+          xp_reward?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ar_collectibles_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       challenges: {
         Row: {
           cadence: string
@@ -410,6 +451,45 @@ export type Database = {
             columns: ["achievement_id"]
             isOneToOne: false
             referencedRelation: "achievements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_ar_discoveries: {
+        Row: {
+          collectible_id: string
+          discovered_at: string
+          id: string
+          store_id: string | null
+          user_id: string
+        }
+        Insert: {
+          collectible_id: string
+          discovered_at?: string
+          id?: string
+          store_id?: string | null
+          user_id: string
+        }
+        Update: {
+          collectible_id?: string
+          discovered_at?: string
+          id?: string
+          store_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_ar_discoveries_collectible_id_fkey"
+            columns: ["collectible_id"]
+            isOneToOne: false
+            referencedRelation: "ar_collectibles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_ar_discoveries_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
             referencedColumns: ["id"]
           },
         ]

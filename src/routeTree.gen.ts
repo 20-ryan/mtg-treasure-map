@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AccountRouteImport } from './routes/account'
+import { Route as ArRouteImport } from './routes/ar'
 import { Route as CollectionRouteImport } from './routes/collection'
 import { Route as MapRouteImport } from './routes/map'
 import { Route as ScanRouteImport } from './routes/scan'
@@ -27,6 +28,11 @@ const IndexRoute = IndexRouteImport.update({
 const AccountRoute = AccountRouteImport.update({
   id: '/account',
   path: '/account',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ArRoute = ArRouteImport.update({
+  id: '/ar',
+  path: '/ar',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CollectionRoute = CollectionRouteImport.update({
@@ -68,6 +74,7 @@ const StoreStoreIdRoute = StoreStoreIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
+  '/ar': typeof ArRoute
   '/collection': typeof CollectionRoute
   '/map': typeof MapRoute
   '/scan': typeof ScanRoute
@@ -79,6 +86,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
+  '/ar': typeof ArRoute
   '/collection': typeof CollectionRoute
   '/map': typeof MapRoute
   '/scan': typeof ScanRoute
@@ -91,6 +99,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
+  '/ar': typeof ArRoute
   '/collection': typeof CollectionRoute
   '/map': typeof MapRoute
   '/scan': typeof ScanRoute
@@ -104,6 +113,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/account'
+    | '/ar'
     | '/collection'
     | '/map'
     | '/scan'
@@ -115,6 +125,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/account'
+    | '/ar'
     | '/collection'
     | '/map'
     | '/scan'
@@ -126,6 +137,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/account'
+    | '/ar'
     | '/collection'
     | '/map'
     | '/scan'
@@ -138,6 +150,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountRoute: typeof AccountRoute
+  ArRoute: typeof ArRoute
   CollectionRoute: typeof CollectionRoute
   MapRoute: typeof MapRoute
   ScanRoute: typeof ScanRoute
@@ -161,6 +174,13 @@ declare module '@tanstack/react-router' {
       path: '/account'
       fullPath: '/account'
       preLoaderRoute: typeof AccountRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ar': {
+      id: '/ar'
+      path: '/ar'
+      fullPath: '/ar'
+      preLoaderRoute: typeof ArRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/collection': {
@@ -218,6 +238,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
+  ArRoute: ArRoute,
   CollectionRoute: CollectionRoute,
   MapRoute: MapRoute,
   ScanRoute: ScanRoute,

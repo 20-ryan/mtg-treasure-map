@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Search, MapPin, Navigation, Heart, Camera, QrCode, Layers, Trophy } from "lucide-react";
+import { Search, MapPin, Navigation, Heart, Camera, QrCode, Layers, Trophy, Sparkles } from "lucide-react";
 import { useWishlist } from "@/lib/wishlist";
 import { StoreMap } from "@/components/app/StoreMap";
 import { ProductCard } from "@/components/app/ProductCard";
@@ -134,6 +134,24 @@ function HomePage() {
             </button>
           </div>
         </form>
+
+        <Link
+          to="/ar"
+          className="mt-3 flex items-center justify-between gap-3 rounded-xl border border-primary/60 bg-linear-to-r from-primary/20 via-accent/15 to-transparent px-3 py-3 mythic-ring"
+        >
+          <span className="flex items-center gap-2.5">
+            <span className="grid h-9 w-9 place-items-center rounded-full bg-linear-to-br from-primary to-warning text-primary-foreground">
+              <Sparkles className="h-4.5 w-4.5" />
+            </span>
+            <span>
+              <span className="block font-display text-sm font-bold text-gradient-gold">AR Collector Mode</span>
+              <span className="block text-[10px] text-muted-foreground">
+                Scan cards, find stores and hunt AR collectibles
+              </span>
+            </span>
+          </span>
+          <span className="shrink-0 text-xs font-bold text-primary">Enter →</span>
+        </Link>
 
         <div className="mt-4 grid grid-cols-4 gap-2">
           {QUICK.map(({ to, label, icon: Icon }) => (
